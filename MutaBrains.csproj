@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include="assets\**\*.*">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+
+    <PackageReference Include="Microsoft.ML" Version="1.5.2" />
+    <PackageReference Include="Microsoft.ML.FastTree" Version="1.5.2" />
+    <PackageReference Include="Microsoft.ML.ImageAnalytics" Version="1.5.2" />
+    <PackageReference Include="Microsoft.ML.LightGBM" Version="1.5.2" />
+    <PackageReference Include="Microsoft.ML.OnnxTransformer" Version="1.5.2" />
+    <PackageReference Include="Microsoft.ML.TensorFlow" Version="1.5.2" />
+    <PackageReference Include="OpenTK" Version="4.1.0" />
+    <PackageReference Include="SixLabors.Fonts" Version="1.0.0-beta0013" />
+    <PackageReference Include="SixLabors.ImageSharp" Version="1.0.1" />
+    <PackageReference Include="SixLabors.ImageSharp.Drawing" Version="1.0.0-beta0010" />
+  </ItemGroup>
+
+</Project>
