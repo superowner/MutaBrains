@@ -40,9 +40,9 @@ namespace MutaBrains.Core.GUI
             texture = Texture.fromImage(image);
 
             origin = ComponentOrigin.TopLeft;
-            Initialize(texture.Size, new Vector3(startPosition));
+            Initialize(texture.Size, new Vector3(20, 20, 0));
 
-            closeBtn = new Button(new Vector2(44, texture.Size.Y - 10), ComponentOrigin.BottomLeft);
+            closeBtn = new Button(new Vector2(texture.Size.X / 2, texture.Size.Y - 20), ComponentOrigin.Center);
             addChild(closeBtn);
         }
 

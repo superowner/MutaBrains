@@ -75,69 +75,55 @@ namespace MutaBrains.Core.GUI
 
         protected virtual void InitializeVertices()
         {
+            float l_x = 0.0f;
+            float r_x = 0.0f;
+            float t_y = 0.0f;
+            float b_y = 0.0f;
+
             switch (origin)
             {
                 case ComponentOrigin.TopLeft:
-                    vertices = new float[] {
-                        // Position             Normals             Texture coordinates
-                        0.0f,   0.0f,   0.0f,   0.0f, 0.0f, -1.0f,  0.0f, 1.0f, // top left
-                        size.X, 0.0f,   0.0f,   0.0f, 0.0f, -1.0f,  1.0f, 1.0f, // top right
-                        size.X, size.Y, 0.0f,   0.0f, 0.0f, -1.0f,  1.0f, 0.0f, // bottom right
-                        
-                        0.0f,   0.0f,   0.0f,   0.0f, 0.0f, -1.0f,  0.0f, 1.0f, // top left
-                        size.X, size.Y, 0.0f,   0.0f, 0.0f, -1.0f,  1.0f, 0.0f, // bottom right
-                        0.0f,   size.Y, 0.0f,   0.0f, 0.0f, -1.0f,  0.0f, 0.0f, // bottom left
-                    };
+                    l_x = 0.0f;
+                    r_x = size.X;
+                    t_y = 0.0f;
+                    b_y = size.Y;
                     break;
                 case ComponentOrigin.TopRight:
-                    vertices = new float[] {
-                        // Position                 Normals             Texture coordinates
-                        -size.X,    0.0f,   0.0f,   0.0f, 0.0f, -1.0f,  0.0f, 1.0f, // top left
-                        0.0f,       0.0f,   0.0f,   0.0f, 0.0f, -1.0f,  1.0f, 1.0f, // top right
-                        0.0f,       size.Y, 0.0f,   0.0f, 0.0f, -1.0f,  1.0f, 0.0f, // bottom right
-                        
-                        -size.X,    0.0f,   0.0f,   0.0f, 0.0f, -1.0f,  0.0f, 1.0f, // top left
-                        0.0f,       size.Y, 0.0f,   0.0f, 0.0f, -1.0f,  1.0f, 0.0f, // bottom right
-                        -size.X,    size.Y, 0.0f,   0.0f, 0.0f, -1.0f,  0.0f, 0.0f, // bottom left
-                    };
+                    l_x = -size.X;
+                    r_x = 0.0f;
+                    t_y = 0.0f;
+                    b_y = size.Y;
                     break;
                 case ComponentOrigin.Center:
-                    vertices = new float[] {
-                        // Position                             Normals             Texture coordinates
-                        -size.X / 2.0f, -size.Y / 2.0f, 0.0f,   0.0f, 0.0f, -1.0f,  0.0f, 1.0f, // top left
-                        +size.X / 2.0f, -size.Y / 2.0f, 0.0f,   0.0f, 0.0f, -1.0f,  1.0f, 1.0f, // top right
-                        +size.X / 2.0f, +size.Y / 2.0f, 0.0f,   0.0f, 0.0f, -1.0f,  1.0f, 0.0f, // bottom right
-                        
-                        -size.X / 2.0f, -size.Y / 2.0f, 0.0f,   0.0f, 0.0f, -1.0f,  0.0f, 1.0f, // top left
-                        +size.X / 2.0f, +size.Y / 2.0f, 0.0f,   0.0f, 0.0f, -1.0f,  1.0f, 0.0f, // bottom right
-                        -size.X / 2.0f, +size.Y / 2.0f, 0.0f,   0.0f, 0.0f, -1.0f,  0.0f, 0.0f, // bottom left
-                    };
+                    l_x = -size.X / 2.0f;
+                    r_x = size.X / 2.0f;
+                    t_y = -size.Y / 2.0f;
+                    b_y = size.Y / 2.0f;
                     break;
                 case ComponentOrigin.BottomLeft:
-                    vertices = new float[] {
-                        // Position                 Normals             Texture coordinates
-                        0.0f,   -size.Y,    0.0f,   0.0f, 0.0f, -1.0f,  0.0f, 1.0f, // top left
-                        size.X, -size.Y,    0.0f,   0.0f, 0.0f, -1.0f,  1.0f, 1.0f, // top right
-                        size.X, 0.0f,       0.0f,   0.0f, 0.0f, -1.0f,  1.0f, 0.0f, // bottom right
-                        
-                        0.0f,   -size.Y,    0.0f,   0.0f, 0.0f, -1.0f,  0.0f, 1.0f, // top left
-                        size.X, 0.0f,       0.0f,   0.0f, 0.0f, -1.0f,  1.0f, 0.0f, // bottom right
-                        0.0f,   0.0f,       0.0f,   0.0f, 0.0f, -1.0f,  0.0f, 0.0f, // bottom left
-                    };
+                    l_x = 0.0f;
+                    r_x = size.X;
+                    t_y = -size.Y;
+                    b_y = 0.0f;
                     break;
                 case ComponentOrigin.BottomRight:
-                    vertices = new float[] {
-                        // Position             Normals             Texture coordinates
-                        -size.X,    -size.Y,    0.0f,   0.0f, 0.0f, -1.0f,  0.0f, 1.0f, // top left
-                        0.0f,       -size.Y,    0.0f,   0.0f, 0.0f, -1.0f,  1.0f, 1.0f, // top right
-                        0.0f,       0.0f,       0.0f,   0.0f, 0.0f, -1.0f,  1.0f, 0.0f, // bottom right
-                        
-                        -size.X,    -size.Y,    0.0f,   0.0f, 0.0f, -1.0f,  0.0f, 1.0f, // top left
-                        0.0f,       0.0f,       0.0f,   0.0f, 0.0f, -1.0f,  1.0f, 0.0f, // bottom right
-                        -size.X,    0.0f,       0.0f,   0.0f, 0.0f, -1.0f,  0.0f, 0.0f, // bottom left
-                    };
+                    l_x = -size.X;
+                    r_x = 0.0f;
+                    t_y = -size.Y;
+                    b_y = 0.0f;
                     break;
             }
+
+            vertices = new float[] {
+                // Position             Normals                 Textures
+                l_x,    t_y,    0.0f,   0.0f,   0.0f,   -1.0f,  0.0f,   1.0f,   // top left
+                r_x,    t_y,    0.0f,   0.0f,   0.0f,   -1.0f,  1.0f,   1.0f,   // top right
+                r_x,    b_y,    0.0f,   0.0f,   0.0f,   -1.0f,  1.0f,   0.0f,   // bottom right
+                
+                l_x,    t_y,    0.0f,   0.0f,   0.0f,   -1.0f,  0.0f,   1.0f,   // top left
+                r_x,    b_y,    0.0f,   0.0f,   0.0f,   -1.0f,  1.0f,   0.0f,   // bottom right
+                l_x,    b_y,    0.0f,   0.0f,   0.0f,   -1.0f,  0.0f,   0.0f,   // bottom left
+            };
 
             rotationMatrix = Matrix4.CreateRotationZ(MathHelper.DegreesToRadians(angle));
             scaleMatrix = Matrix4.CreateScale(scale);
@@ -232,29 +218,30 @@ namespace MutaBrains.Core.GUI
         public void addChild(Component child)
         {
             child.parent = this;
+            Vector3 positionShift = Vector3.Zero;
             switch (origin)
             {
-                // учитывать ориджин другого при выщитывании смещения
-                // создать класс для подсчета
                 case ComponentOrigin.TopLeft:
-                    child.position.X += position.X;
-                    child.position.Y += position.Y;
+                    positionShift = position;
                     break;
                 case ComponentOrigin.TopRight:
-                    child.position.X += position.X - size.X;
-                    child.position.Y += position.Y;
+                    positionShift.X += position.X - size.X;
+                    positionShift.Y += position.Y;
                     break;
                 case ComponentOrigin.Center:
-                    child.position = new Vector3(child.position.X + position.X, child.position.Y + position.Y, 0);
+                    positionShift.X += position.X - size.X / 2.0f;
+                    positionShift.Y += position.Y - size.Y / 2.0f;
                     break;
                 case ComponentOrigin.BottomLeft:
-                    child.position.X += position.X;
-                    child.position.Y = position.Y - 10;
+                    positionShift.X += position.X;
+                    positionShift.Y += position.Y - size.Y;
                     break;
                 case ComponentOrigin.BottomRight:
-                    child.position = new Vector3(child.position.X + position.X, child.position.Y + position.Y, 0);
+                    positionShift.X += position.X - size.X;
+                    positionShift.Y += position.Y - size.Y;
                     break;
             }
+            child.position += positionShift;
             child.RefreshVertexBuffer();
             childs.Add(child);
         }
