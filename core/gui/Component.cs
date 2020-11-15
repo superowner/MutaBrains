@@ -1,4 +1,3 @@
-using System.Drawing;
 using System.Collections.Generic;
 using OpenTK.Mathematics;
 using OpenTK.Windowing.Common;
@@ -6,7 +5,6 @@ using OpenTK.Graphics.OpenGL4;
 using MutaBrains.Core.Shaders;
 using MutaBrains.Core.Textures;
 using MutaBrains.Core.Output;
-using MutaBrains.Core.Collisions;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 
 namespace MutaBrains.Core.GUI
@@ -18,6 +16,13 @@ namespace MutaBrains.Core.GUI
         Center,
         BottomLeft,
         BottomRight
+    }
+
+    public enum DragType
+    {
+        None,
+        Full,
+        Area
     }
 
     public class Component
@@ -32,6 +37,8 @@ namespace MutaBrains.Core.GUI
         protected float angle = 0.0f;
         protected Vector3 scale = Vector3.One;
         protected ComponentOrigin origin = ComponentOrigin.Center;
+        protected DragType dragType = DragType.None;
+        protected Box2 dragArea = new Box2();
 
         protected Matrix4 rotationMatrix;
         protected Matrix4 scaleMatrix;
@@ -42,10 +49,8 @@ namespace MutaBrains.Core.GUI
         protected List<Component> childs = new List<Component>();
         protected bool visible = true;
         protected bool collisionCheckEnabled = false;
-        protected double collisionUpdateTime = 0.2;
-        protected RectangleF boundingBox = RectangleF.Empty;
-
-        private double collisionTime = 0;
+        protected double collisionUpdateTime = 0.01;
+        protected Box2 boundingBox;
 
         public delegate void MBMouseEvent(object sender, MouseButtonEventArgs args);
         public event MBMouseEvent OnMouseHover;
@@ -54,9 +59,12 @@ namespace MutaBrains.Core.GUI
         public event MBMouseEvent OnMouseUp;
         public event MBMouseEvent OnMouseClick;
 
+        private double collisionTime = 0;
         private bool isHovered = false;
         private bool isMouseDown = false;
         private double clickTimer = 0;
+        private bool isDragged = false;
+        private Vector2 dragOffset = Vector2.Zero;
 
         public virtual void Initialize(Vector2 size, Vector3 startPosition)
         {
@@ -149,12 +157,13 @@ namespace MutaBrains.Core.GUI
             scaleMatrix = Matrix4.CreateScale(scale);
             translationMatrix = Matrix4.CreateTranslation(position);
 
-            boundingBox = new RectangleF(position.X, position.Y, size.X, size.Y);
+            boundingBox = new Box2(l_x, t_y, r_x, b_y);
+            boundingBox.Translate(position.Xy);
 
             modelMatrix = rotationMatrix * scaleMatrix * translationMatrix;
         }
 
-        protected virtual void RefreshVertexBuffer()
+        protected virtual void RefreshVertexBuffer(bool vertexInit = true)
         {
             InitializeVertices();
 
@@ -168,21 +177,24 @@ namespace MutaBrains.Core.GUI
             RefreshVertexBuffer();
         }
 
-        public virtual void Update(double time, Vector2 mousePosition, MouseState mouseState = null, KeyboardState keyboardState = null, bool updateInput = true)
+        public virtual void Update(double time, Vector2 mousePosition, MouseState mouseState = null, KeyboardState keyboardState = null)
         {
             if (collisionCheckEnabled)
             {
                 collisionTime += time;
                 if (clickTimer < 1) { clickTimer += time; }
 
+                if (isDragged)
+                {
+                    changePosition(new Vector3(mousePosition + dragOffset));
+                }
+
                 if (collisionTime >= collisionUpdateTime)
                 {
                     MouseButtonEventArgs MBEA = new MouseButtonEventArgs();
 
-                    if (CollisionDetector.checkGUIvsPointer(this, mousePosition))
+                    if (boundingBox.Contains(mousePosition))
                     {
-                        // Console.WriteLine("collision detected");
-                        
                         if (!isHovered)
                         {
                             OnMouseHover?.Invoke(this, MBEA);
@@ -196,6 +208,12 @@ namespace MutaBrains.Core.GUI
                                 OnMouseDown?.Invoke(this, MBEA);
                                 isMouseDown = true;
                                 clickTimer = 0;
+
+                                if ((dragType == DragType.Area && dragArea.Contains(mousePosition)) || dragType == DragType.Full)
+                                {
+                                    isDragged = true;
+                                    dragOffset = position.Xy - mousePosition;
+                                }
                             }
                         }
                         else
@@ -204,6 +222,10 @@ namespace MutaBrains.Core.GUI
                             {
                                 OnMouseUp?.Invoke(this, MBEA);
                                 isMouseDown = false;
+                                if (isDragged)
+                                {
+                                    isDragged = false;
+                                }
                                 if (clickTimer <= 0.9)
                                 {
                                     OnMouseClick?.Invoke(this, MBEA);
@@ -213,8 +235,6 @@ namespace MutaBrains.Core.GUI
                     }
                     else
                     {
-                        // Console.WriteLine("collision not detected");
-
                         if (isHovered)
                         {
                             OnMouseLeave?.Invoke(this, MBEA);
@@ -224,6 +244,16 @@ namespace MutaBrains.Core.GUI
 
                     collisionTime = 0;
                 }
+            }
+
+            UpdateChilds(time, mousePosition, mouseState, keyboardState);
+        }
+
+        protected virtual void UpdateChilds(double time, Vector2 mousePosition, MouseState mouseState = null, KeyboardState keyboardState = null)
+        {
+            foreach (Component child in childs)
+            {
+                child.Update(time, mousePosition, mouseState, keyboardState);
             }
         }
 
@@ -252,6 +282,19 @@ namespace MutaBrains.Core.GUI
             foreach (Component child in childs)
             {
                 child.Draw(time);
+            }
+        }
+
+        protected virtual void changePosition(Vector3 newPosition)
+        {
+            Vector3 offset = new Vector3(newPosition - position);
+            position = newPosition;
+            RefreshVertexBuffer(false);
+
+            foreach (Component child in childs)
+            {
+                child.position += offset;
+                child.RefreshVertexBuffer(false);
             }
         }
 
@@ -328,7 +371,7 @@ namespace MutaBrains.Core.GUI
             childs.Remove(child);
         }
 
-        public RectangleF getBoundingBox()
+        public Box2 getBoundingBox()
         {
             return boundingBox;
         }

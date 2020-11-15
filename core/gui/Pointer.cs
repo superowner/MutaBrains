@@ -14,7 +14,7 @@ namespace MutaBrains.Core.GUI
             Initialize(texture.Size, new Vector3(400, 300, 0));
         }
 
-        public override void Update(double time, Vector2 mousePosition, MouseState mouseStat = null, KeyboardState keyboardState = null, bool updateInput = true)
+        public override void Update(double time, Vector2 mousePosition, MouseState mouseStat = null, KeyboardState keyboardState = null)
         {
             position = new Vector3(mousePosition);
             RefreshVertexBuffer();
