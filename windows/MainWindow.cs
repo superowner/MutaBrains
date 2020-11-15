@@ -1,3 +1,5 @@
+using System;
+
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
 using OpenTK.Windowing.Common;
@@ -7,6 +9,7 @@ using OpenTK.Windowing.GraphicsLibraryFramework;
 using MutaBrains.Core.Shaders;
 using MutaBrains.Core.GUI;
 using MutaBrains.Core.Output;
+using MutaBrains.Core.FPS;
 
 namespace MutaBrains.Windows
 {
@@ -70,6 +73,7 @@ namespace MutaBrains.Windows
 
         protected override void OnRenderFrame(FrameEventArgs args)
         {
+            FPSCounter.Calculate(args.Time);
             GL.Clear(ClearBufferMask.DepthBufferBit | ClearBufferMask.ColorBufferBit);
 
             background.Draw(args.Time);
@@ -78,6 +82,7 @@ namespace MutaBrains.Windows
 
             SwapBuffers();
             base.OnRenderFrame(args);
+            Title = $"MutaBrains :: FPS now: { FPSCounter.FPS } max: { FPSCounter.Max } min: { FPSCounter.Min }";
         }
     }
 }
