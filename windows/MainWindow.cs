@@ -66,7 +66,7 @@ namespace MutaBrains.Windows
                 Close();
             }
 
-            testForm.Update(args.Time, MousePosition);
+            testForm.Update(args.Time, MousePosition, MouseState, KeyboardState);
 
             base.OnUpdateFrame(args);
         }

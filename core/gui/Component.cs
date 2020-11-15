@@ -1,12 +1,13 @@
 using System.Drawing;
 using System.Collections.Generic;
 using OpenTK.Mathematics;
+using OpenTK.Windowing.Common;
 using OpenTK.Graphics.OpenGL4;
 using MutaBrains.Core.Shaders;
 using MutaBrains.Core.Textures;
 using MutaBrains.Core.Output;
 using MutaBrains.Core.Collisions;
-using System;
+using OpenTK.Windowing.GraphicsLibraryFramework;
 
 namespace MutaBrains.Core.GUI
 {
@@ -46,12 +47,16 @@ namespace MutaBrains.Core.GUI
 
         private double collisionTime = 0;
 
-        // public delegate void MBMouseEvent();
-        // public event MBMouseEvent OnMouseHover;
-        // public event MBMouseEvent OnMouseLeave;
-        // public event MBMouseEvent OnMouseDown;
-        // public event MBMouseEvent OnMouseUp;
-        // public event MBMouseEvent OnMouseClick;
+        public delegate void MBMouseEvent(object sender, MouseButtonEventArgs args);
+        public event MBMouseEvent OnMouseHover;
+        public event MBMouseEvent OnMouseLeave;
+        public event MBMouseEvent OnMouseDown;
+        public event MBMouseEvent OnMouseUp;
+        public event MBMouseEvent OnMouseClick;
+
+        private bool isHovered = false;
+        private bool isMouseDown = false;
+        private double clickTimer = 0;
 
         public virtual void Initialize(Vector2 size, Vector3 startPosition)
         {
@@ -163,21 +168,58 @@ namespace MutaBrains.Core.GUI
             RefreshVertexBuffer();
         }
 
-        public virtual void Update(double time, Vector2 mousePosition, bool updateInput = true)
+        public virtual void Update(double time, Vector2 mousePosition, MouseState mouseState = null, KeyboardState keyboardState = null, bool updateInput = true)
         {
             if (collisionCheckEnabled)
             {
                 collisionTime += time;
+                if (clickTimer < 1) { clickTimer += time; }
 
                 if (collisionTime >= collisionUpdateTime)
                 {
+                    MouseButtonEventArgs MBEA = new MouseButtonEventArgs();
+
                     if (CollisionDetector.checkGUIvsPointer(this, mousePosition))
                     {
-                        Console.WriteLine("collision detected");
+                        // Console.WriteLine("collision detected");
+                        
+                        if (!isHovered)
+                        {
+                            OnMouseHover?.Invoke(this, MBEA);
+                            isHovered = true;
+                        }
+
+                        if (mouseState.IsAnyButtonDown)
+                        {
+                            if (!isMouseDown)
+                            {
+                                OnMouseDown?.Invoke(this, MBEA);
+                                isMouseDown = true;
+                                clickTimer = 0;
+                            }
+                        }
+                        else
+                        {
+                            if (isMouseDown)
+                            {
+                                OnMouseUp?.Invoke(this, MBEA);
+                                isMouseDown = false;
+                                if (clickTimer <= 0.9)
+                                {
+                                    OnMouseClick?.Invoke(this, MBEA);
+                                }
+                            }
+                        }
                     }
                     else
                     {
-                        Console.WriteLine("collision not detected");
+                        // Console.WriteLine("collision not detected");
+
+                        if (isHovered)
+                        {
+                            OnMouseLeave?.Invoke(this, MBEA);
+                            isHovered = false;
+                        }
                     }
 
                     collisionTime = 0;

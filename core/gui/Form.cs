@@ -7,6 +7,8 @@ using SixLabors.Fonts;
 using MutaBrains.Core.Textures;
 using MutaBrains.Core.Import;
 using MutaBrains.Config;
+using OpenTK.Windowing.Common;
+using System;
 
 namespace MutaBrains.Core.GUI
 {
@@ -45,6 +47,37 @@ namespace MutaBrains.Core.GUI
 
             closeBtn = new Button(new Vector2(texture.Size.X / 2, texture.Size.Y - 20), ComponentOrigin.Center);
             addChild(closeBtn);
+
+            OnMouseHover += Form_OnMouseHover;
+            OnMouseLeave += Form_OnMouseLeave;
+            OnMouseDown += Form_OnMouseDown;
+            OnMouseUp += Form_OnMouseUp;
+            OnMouseClick += Form_OnMouseClick;
+        }
+
+        private void Form_OnMouseClick(object sender, MouseButtonEventArgs args)
+        {
+            Console.WriteLine("CLICK");
+        }
+
+        private void Form_OnMouseUp(object sender, MouseButtonEventArgs args)
+        {
+            Console.WriteLine("UP");
+        }
+
+        private void Form_OnMouseDown(object sender, MouseButtonEventArgs args)
+        {
+            Console.WriteLine("DOWN");
+        }
+
+        private void Form_OnMouseLeave(object sender, MouseButtonEventArgs args)
+        {
+            Console.WriteLine("LEAVE");
+        }
+
+        private void Form_OnMouseHover(object sender, MouseButtonEventArgs args)
+        {
+            Console.WriteLine("HOVER");
         }
     }
 }
