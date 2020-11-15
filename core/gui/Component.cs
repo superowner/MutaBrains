@@ -264,7 +264,7 @@ namespace MutaBrains.Core.GUI
                 GL.Disable(EnableCap.DepthTest);
 
                 GL.BindVertexArray(vertexArray);
-                texture.Use();
+                texture.Use(TextureUnit.Texture0);
                 ShaderManager.guiShader.Use();
 
                 ShaderManager.guiShader.SetMatrix4("model", modelMatrix);
