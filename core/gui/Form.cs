@@ -40,16 +40,11 @@ namespace MutaBrains.Core.GUI
             texture = Texture.fromImage(image);
 
             origin = ComponentOrigin.TopLeft;
-            Initialize(texture.Size, new Vector3(20, 20, 0));
+            collisionCheckEnabled = true;
+            Initialize(texture.Size, new Vector3(startPosition));
 
             closeBtn = new Button(new Vector2(texture.Size.X / 2, texture.Size.Y - 20), ComponentOrigin.Center);
             addChild(closeBtn);
-        }
-
-        public override void Update(double time, Vector2 newPosition, bool updateInput = true)
-        {
-            position = new Vector3(newPosition);
-            RefreshVertexBuffer();
         }
     }
 }

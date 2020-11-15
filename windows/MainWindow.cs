@@ -28,7 +28,7 @@ namespace MutaBrains.Windows
 
             background = new Background("gui_background", ClientSize);
             pointer = new Pointer(MousePosition);
-            testForm = new Form(new Vector2(20));
+            testForm = new Form(new Vector2(50));
 
             GL.Enable(EnableCap.Multisample);
             GL.Enable(EnableCap.CullFace);
@@ -62,6 +62,8 @@ namespace MutaBrains.Windows
             if (KeyboardState.IsKeyDown(Keys.Escape)) {
                 Close();
             }
+
+            testForm.Update(args.Time, MousePosition);
 
             base.OnUpdateFrame(args);
         }

@@ -1,9 +1,12 @@
+using System.Drawing;
 using System.Collections.Generic;
 using OpenTK.Mathematics;
 using OpenTK.Graphics.OpenGL4;
 using MutaBrains.Core.Shaders;
 using MutaBrains.Core.Textures;
 using MutaBrains.Core.Output;
+using MutaBrains.Core.Collisions;
+using System;
 
 namespace MutaBrains.Core.GUI
 {
@@ -37,6 +40,18 @@ namespace MutaBrains.Core.GUI
         protected Component parent = null;
         protected List<Component> childs = new List<Component>();
         protected bool visible = true;
+        protected bool collisionCheckEnabled = false;
+        protected double collisionUpdateTime = 0.2;
+        protected RectangleF boundingBox = RectangleF.Empty;
+
+        private double collisionTime = 0;
+
+        // public delegate void MBMouseEvent();
+        // public event MBMouseEvent OnMouseHover;
+        // public event MBMouseEvent OnMouseLeave;
+        // public event MBMouseEvent OnMouseDown;
+        // public event MBMouseEvent OnMouseUp;
+        // public event MBMouseEvent OnMouseClick;
 
         public virtual void Initialize(Vector2 size, Vector3 startPosition)
         {
@@ -129,6 +144,8 @@ namespace MutaBrains.Core.GUI
             scaleMatrix = Matrix4.CreateScale(scale);
             translationMatrix = Matrix4.CreateTranslation(position);
 
+            boundingBox = new RectangleF(position.X, position.Y, size.X, size.Y);
+
             modelMatrix = rotationMatrix * scaleMatrix * translationMatrix;
         }
 
@@ -146,9 +163,26 @@ namespace MutaBrains.Core.GUI
             RefreshVertexBuffer();
         }
 
-        public virtual void Update(double time, Vector2 newPosition, bool updateInput = true)
+        public virtual void Update(double time, Vector2 mousePosition, bool updateInput = true)
         {
+            if (collisionCheckEnabled)
+            {
+                collisionTime += time;
 
+                if (collisionTime >= collisionUpdateTime)
+                {
+                    if (CollisionDetector.checkGUIvsPointer(this, mousePosition))
+                    {
+                        Console.WriteLine("collision detected");
+                    }
+                    else
+                    {
+                        Console.WriteLine("collision not detected");
+                    }
+
+                    collisionTime = 0;
+                }
+            }
         }
 
         public virtual void Draw(double time)
@@ -250,6 +284,11 @@ namespace MutaBrains.Core.GUI
         {
             child.parent = null;
             childs.Remove(child);
+        }
+
+        public RectangleF getBoundingBox()
+        {
+            return boundingBox;
         }
     }
 }

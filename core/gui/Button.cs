@@ -41,11 +41,5 @@ namespace MutaBrains.Core.GUI
             this.origin = origin;
             Initialize(texture.Size, new Vector3(startPosition));
         }
-
-        public override void Update(double time, Vector2 newPosition, bool updateInput = true)
-        {
-            position = new Vector3(newPosition);
-            RefreshVertexBuffer();
-        }
     }
 }
