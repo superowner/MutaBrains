@@ -12,7 +12,10 @@ namespace MutaBrains.Core.Managers
         {
             TextDrawer.Initialize();
 
-            Form testForm = new Form("Drag'n'drop me!", Vector2.Zero);
+            Form testForm = new Form("DRAG'n'DROP ME!", "Just try!", new Vector2(20));
+            Button closeBtn = new Button("CLOSE", new Vector2(testForm.size.X / 2, testForm.size.Y - 24), ComponentOrigin.Center);
+            closeBtn.OnMouseClick += (o, a) => { testForm.Hide(); };
+            testForm.addChild(closeBtn);
             components.Add(testForm);
         }
 

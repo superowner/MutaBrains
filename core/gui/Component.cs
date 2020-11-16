@@ -26,12 +26,13 @@ namespace MutaBrains.Core.GUI
 
     public class Component
     {
+        public Vector2 size { get; protected set; }
+
         protected float[] vertices;
         protected int vertexBuffer;
         protected int vertexArray;
         protected int vertexLength;
         protected Texture texture;
-        protected Vector2 size;
         protected Vector3 position;
         protected float angle = 0.0f;
         protected Vector3 scale = Vector3.One;
@@ -308,11 +309,6 @@ namespace MutaBrains.Core.GUI
             }
         }
 
-        public Vector2 getSize()
-        {
-            return size;
-        }
-
         public void Show()
         {
             visible = true;
@@ -368,11 +364,6 @@ namespace MutaBrains.Core.GUI
         {
             child.parent = null;
             childs.Remove(child);
-        }
-
-        public Box2 getBoundingBox()
-        {
-            return boundingBox;
         }
     }
 }

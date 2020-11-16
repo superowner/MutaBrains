@@ -16,13 +16,19 @@ namespace MutaBrains.Core.GUI
         public static void Initialize()
         {
             collection = new FontCollection();
-            family = collection.Install(@"assets/fonts/library-3-am.3amsoft.ttf");
-            font = family.CreateFont(24, FontStyle.Regular);
+            family = collection.Install(@"assets/fonts/OpenSans-Bold.ttf");
         }
 
-        public static Image<Rgba32> DrawOnTexture(string texture_name, string text, float x = 0, float y = 0)
+        public static Image<Rgba32> DrawOnTexture(string texture_name, string text, float x = 0, float y = 0, float font_size = 24, FontStyle style = FontStyle.Regular)
         {
+            font = family.CreateFont(font_size, style);
             Image<Rgba32> image = Image.Load<Rgba32>(Navigator.TexturePath(texture_name));
+            return DrawOnTexture(image, text, x, y, font_size, style);
+        }
+
+        public static Image<Rgba32> DrawOnTexture(Image<Rgba32> image, string text, float x = 0, float y = 0, float font_size = 24, FontStyle style = FontStyle.Regular)
+        {
+            font = family.CreateFont(font_size, style);
             TextGraphicsOptions options = new TextGraphicsOptions()
             {
                 TextOptions = new TextOptions()

@@ -5,9 +5,11 @@ namespace MutaBrains.Core.GUI
 {
     class Form : Component
     {
-        public Form(string title, Vector2 startPosition)
+        public Form(string title, string content, Vector2 startPosition)
         {
-            texture = Texture.fromImage(TextDrawer.DrawOnTexture("gui_forms_mini", title, 0, 14));
+            var title_image = TextDrawer.DrawOnTexture("gui_forms_mini", title, 0, 14);
+            var content_image = TextDrawer.DrawOnTexture(title_image, content, 0, 60, 16);
+            texture = Texture.fromImage(content_image);
             origin = ComponentOrigin.TopLeft;
             collisionCheckEnabled = true;
             dragType = DragType.Full;
