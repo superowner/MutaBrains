@@ -5,8 +5,6 @@ namespace MutaBrains.Core.GUI
 {
     class Form : Component
     {
-        protected Button closeBtn;
-
         public Form(string title, Vector2 startPosition)
         {
             texture = Texture.fromImage(TextDrawer.DrawOnTexture("gui_forms_mini", title, 0, 14));

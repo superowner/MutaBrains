@@ -14,7 +14,6 @@ namespace MutaBrains.Windows
     {
         Background background;
         Pointer pointer;
-        Form testForm, testForm2;
 
         public MainWindow(GameWindowSettings gwSettings, NativeWindowSettings nwSettings) : base(gwSettings, nwSettings)
         {
@@ -29,8 +28,6 @@ namespace MutaBrains.Windows
 
             background = new Background("gui_background", ClientSize);
             pointer = new Pointer(MousePosition);
-            testForm = new Form("Test form #1", new Vector2(50));
-            testForm2 = new Form("Test form #2", new Vector2(250));
 
             GL.Enable(EnableCap.Multisample);
             GL.Enable(EnableCap.CullFace);
@@ -65,8 +62,7 @@ namespace MutaBrains.Windows
                 Close();
             }
 
-            testForm.Update(args.Time, MousePosition, MouseState, KeyboardState);
-            testForm2.Update(args.Time, MousePosition, MouseState, KeyboardState);
+            GUIManager.Update(args.Time, MousePosition, MouseState, KeyboardState);
 
             base.OnUpdateFrame(args);
         }
@@ -77,8 +73,7 @@ namespace MutaBrains.Windows
             GL.Clear(ClearBufferMask.DepthBufferBit | ClearBufferMask.ColorBufferBit);
 
             background.Draw(args.Time);
-            testForm.Draw(args.Time);
-            testForm2.Draw(args.Time);
+            GUIManager.Draw(args.Time);
             pointer.Draw(args.Time);
 
             SwapBuffers();
