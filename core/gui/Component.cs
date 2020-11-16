@@ -2,10 +2,9 @@ using System.Collections.Generic;
 using OpenTK.Mathematics;
 using OpenTK.Windowing.Common;
 using OpenTK.Graphics.OpenGL4;
-using MutaBrains.Core.Shaders;
-using MutaBrains.Core.Textures;
-using MutaBrains.Core.Output;
 using OpenTK.Windowing.GraphicsLibraryFramework;
+using MutaBrains.Core.Textures;
+using MutaBrains.Core.Managers;
 
 namespace MutaBrains.Core.GUI
 {

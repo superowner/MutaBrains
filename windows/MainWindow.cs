@@ -1,15 +1,12 @@
-using System;
-
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
 using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Desktop;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 
-using MutaBrains.Core.Shaders;
 using MutaBrains.Core.GUI;
-using MutaBrains.Core.Output;
 using MutaBrains.Core.FPS;
+using MutaBrains.Core.Managers;
 
 namespace MutaBrains.Windows
 {
@@ -17,7 +14,7 @@ namespace MutaBrains.Windows
     {
         Background background;
         Pointer pointer;
-        Form testForm;
+        Form testForm, testForm2;
 
         public MainWindow(GameWindowSettings gwSettings, NativeWindowSettings nwSettings) : base(gwSettings, nwSettings)
         {
@@ -28,10 +25,12 @@ namespace MutaBrains.Windows
         {
             ShaderManager.Initialize();
             CameraManager.Initialize(ClientSize.ToVector2(), Vector3.UnitZ * 10);
+            GUIManager.Initialize();
 
             background = new Background("gui_background", ClientSize);
             pointer = new Pointer(MousePosition);
             testForm = new Form("Test form #1", new Vector2(50));
+            testForm2 = new Form("Test form #2", new Vector2(250));
 
             GL.Enable(EnableCap.Multisample);
             GL.Enable(EnableCap.CullFace);
@@ -67,6 +66,7 @@ namespace MutaBrains.Windows
             }
 
             testForm.Update(args.Time, MousePosition, MouseState, KeyboardState);
+            testForm2.Update(args.Time, MousePosition, MouseState, KeyboardState);
 
             base.OnUpdateFrame(args);
         }
@@ -78,6 +78,7 @@ namespace MutaBrains.Windows
 
             background.Draw(args.Time);
             testForm.Draw(args.Time);
+            testForm2.Draw(args.Time);
             pointer.Draw(args.Time);
 
             SwapBuffers();

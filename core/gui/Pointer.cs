@@ -11,7 +11,7 @@ namespace MutaBrains.Core.GUI
             AssetImporter.LoadTexture("pointer_default");
             texture = AssetImporter.GetTexture("pointer_default");
 
-            Initialize(texture.Size, new Vector3(400, 300, 0));
+            Initialize(texture.Size, new Vector3(startPosition));
         }
 
         public override void Update(double time, Vector2 mousePosition, MouseState mouseStat = null, KeyboardState keyboardState = null)

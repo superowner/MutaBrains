@@ -1,6 +1,7 @@
 using OpenTK.Mathematics;
+using MutaBrains.Core.Output;
 
-namespace MutaBrains.Core.Output
+namespace MutaBrains.Core.Managers
 {
     static class CameraManager
     {

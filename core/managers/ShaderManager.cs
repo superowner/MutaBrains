@@ -1,4 +1,6 @@
-namespace MutaBrains.Core.Shaders
+using MutaBrains.Core.Shaders;
+
+namespace MutaBrains.Core.Managers
 {
     static class ShaderManager
     {
