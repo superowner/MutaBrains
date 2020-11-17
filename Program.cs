@@ -17,6 +17,7 @@ namespace MutaBrains
                 NumberOfSamples = 4,
                 Title = "MutaBrains",
                 WindowBorder = OpenTK.Windowing.Common.WindowBorder.Fixed,
+                IsEventDriven = false,
             };
 
             MainWindow window = new MainWindow(gwSettings, nwSettings);
