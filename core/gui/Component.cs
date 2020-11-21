@@ -163,7 +163,7 @@ namespace MutaBrains.Core.GUI
             modelMatrix = rotationMatrix * scaleMatrix * translationMatrix;
         }
 
-        protected virtual void RefreshVertexBuffer(bool vertexInit = true)
+        protected virtual void RefreshVertexBuffer()
         {
             InitializeVertices();
 
@@ -289,12 +289,12 @@ namespace MutaBrains.Core.GUI
         {
             Vector3 offset = new Vector3(newPosition - position);
             position = newPosition;
-            RefreshVertexBuffer(false);
+            RefreshVertexBuffer();
 
             foreach (Component child in childs)
             {
                 child.position += offset;
-                child.RefreshVertexBuffer(false);
+                child.RefreshVertexBuffer();
             }
         }
 

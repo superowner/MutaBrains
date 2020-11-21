@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using MutaBrains.Config;
+using MutaBrains.Core.Import.ObjLoader;
 using MutaBrains.Core.Textures;
 
 namespace MutaBrains.Core.Import
@@ -23,6 +24,12 @@ namespace MutaBrains.Core.Import
             name = name.ToLower();
             string path = Navigator.TexturePath(name);
             return textureList.Find(t => t.Path == path);
+        }
+
+        public static SimpleMesh GetSimpleMesh(string name)
+        {
+            string path = Navigator.MeshPath(name);
+            return SimpleMesh.LoadFromObj(path);
         }
     }
 }

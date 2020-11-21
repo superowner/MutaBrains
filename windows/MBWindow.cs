@@ -16,7 +16,7 @@ namespace MutaBrains.Windows
 
         public MBWindow(GameWindowSettings gameWindowSettings, NativeWindowSettings nativeWindowSettings) : base(gameWindowSettings, nativeWindowSettings) {
             ShaderManager.Initialize();
-            CameraManager.Initialize(this.ClientSize.ToVector2(), Vector3.UnitZ * 10);
+            CameraManager.Initialize(this.ClientSize.ToVector2(), Vector3.UnitZ * 20);
             GUIManager.Initialize(this);
         }
 
@@ -71,6 +71,7 @@ namespace MutaBrains.Windows
         {
             base.OnResize(e);
             GL.Viewport(0, 0, ClientSize.X, ClientSize.Y);
+            CameraManager.WindowResize(ClientSize.ToVector2());
             if (selectedState != null) {
                 selectedState.OnResize(e);
             }

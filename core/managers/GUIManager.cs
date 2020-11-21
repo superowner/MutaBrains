@@ -18,7 +18,7 @@ namespace MutaBrains.Core.Managers
             components = new List<Component>();
 
             Form testForm = new Form("DRAG'n'DROP ME!", "Just try!", new Vector2(20));
-            Button closeBtn = new Button("CLOSE", new Vector2(testForm.size.X / 2, testForm.size.Y - 24), ComponentOrigin.Center);
+            Button closeBtn = new Button("BRAINS!", new Vector2(testForm.size.X / 2, testForm.size.Y - 24), ComponentOrigin.Center);
             closeBtn.OnMouseClick += (o, a) => { window.SelectState("ml_test_menu"); };
             testForm.addChild(closeBtn);
             components.Add(testForm);

@@ -3,15 +3,17 @@ using OpenTK.Windowing.Common;
 using MutaBrains.Core.Managers;
 using MutaBrains.Windows;
 using MutaBrains.Core.GUI;
-using MutaBrains.Config;
-using MutaBrains.Core.Import.ObjLoader;
+using MutaBrains.Core.Import;
+using MutaBrains.Core.Mesh;
+using OpenTK.Mathematics;
 
 namespace MutaBrains.States
 {
     public class MLTestState : State
     {
+        Background background;
         Pointer pointer;
-        SimpleMesh brain;
+        Object3D brain;
 
         public MLTestState(string name, MBWindow window) : base(name, window) { }
 
@@ -19,9 +21,9 @@ namespace MutaBrains.States
         {
             window.CursorVisible = false;
 
+            background = new Background("gui_background", window.ClientSize);
             pointer = new Pointer(window.MousePosition);
-            string path = Navigator.MeshPath("brain");
-            brain = SimpleMesh.LoadFromObj(path);
+            brain = new Object3D(AssetImporter.GetSimpleMesh("brain-simple-mesh"), new Vector3(0.0f, 0.0f, 0.0f));
 
             base.OnLoad();
         }
@@ -32,23 +34,28 @@ namespace MutaBrains.States
             
             CameraManager.WindowResize(window.ClientSize.ToVector2());
             pointer.WindowResize(window.ClientSize.ToVector2());
+            background.WindowResize(window.ClientSize.ToVector2());
         }
 
         public override void OnUpdate(FrameEventArgs args)
         {
             base.OnUpdate(args);
 
-            pointer.Update(args.Time, window.MousePosition);
             if (window.KeyboardState.IsKeyDown(Keys.Escape))
             {
                 window.Close();
             }
+
+            pointer.Update(args.Time, window.MousePosition);
+            brain.Update(args.Time, window.MouseState, window.KeyboardState);
         }
 
         public override void OnDraw(FrameEventArgs args)
         {
             base.OnDraw(args);
 
+            background.Draw(args.Time);
+            brain.Draw(args.Time);
             pointer.Draw(args.Time);
         }
 
@@ -57,6 +64,7 @@ namespace MutaBrains.States
             base.Dispose();
 
             pointer.Dispose();
+            background.Dispose();
         }
     }
 }

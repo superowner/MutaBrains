@@ -34,23 +34,23 @@ namespace MutaBrains.Core.Import.ObjLoader
                 foreach (string info in facesInfo)
                 {
                     string[] tokens = info.Split('/');
-                    int tokensCount = 0;
-                    foreach (string token in tokens)
-                    {
-                        if (token != string.Empty) {
-                            tokensCount++;
-                        }
-                    }
-                    if (tokensCount == 0)
+                    // int tokensCount = 0;
+                    // foreach (string token in tokens)
+                    // {
+                    //     if (token != string.Empty) {
+                    //         tokensCount++;
+                    //     }
+                    // }
+                    if (tokens.Length == 0)
                     {
                         vertsIndxs.Add(int.Parse(info));
                     }
-                    else if (tokensCount == 2)
+                    else if (tokens.Length == 2)
                     {
                         vertsIndxs.Add(int.Parse(tokens[0]));
                         uvsIndxs.Add(int.Parse(tokens[1]));
                     }
-                    else if (tokensCount == 3)
+                    else if (tokens.Length == 3)
                     {
                         int uv;
                         if (int.TryParse(tokens[1], out uv))
