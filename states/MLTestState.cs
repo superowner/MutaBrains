@@ -6,20 +6,16 @@ using MutaBrains.Core.GUI;
 
 namespace MutaBrains.States
 {
-    public class MainMenuState : State
+    public class MLTestState : State
     {
-        Background background;
         Pointer pointer;
 
-        public MainMenuState(string name, MBWindow window) : base(name, window) { }
+        public MLTestState(string name, MBWindow window) : base(name, window) { }
 
         public override void OnLoad()
         {
-            base.OnLoad();
-
             window.CursorVisible = false;
 
-            background = new Background("gui_background", window.ClientSize);
             pointer = new Pointer(window.MousePosition);
         }
 
@@ -29,7 +25,6 @@ namespace MutaBrains.States
             
             CameraManager.WindowResize(window.ClientSize.ToVector2());
             pointer.WindowResize(window.ClientSize.ToVector2());
-            background.WindowResize(window.ClientSize.ToVector2());
         }
 
         public override void OnUpdate(FrameEventArgs args)
@@ -41,15 +36,12 @@ namespace MutaBrains.States
             {
                 window.Close();
             }
-            GUIManager.Update(args.Time, window.MousePosition, window.MouseState, window.KeyboardState);
         }
 
         public override void OnDraw(FrameEventArgs args)
         {
             base.OnDraw(args);
 
-            background.Draw(args.Time);
-            GUIManager.Draw(args.Time);
             pointer.Draw(args.Time);
         }
 
@@ -57,7 +49,6 @@ namespace MutaBrains.States
         {
             base.Dispose();
 
-            background.Dispose();
             pointer.Dispose();
         }
     }

@@ -6,7 +6,8 @@ namespace MutaBrains.States
     public class State
     {
         public string Name;
-        protected MBWindow window;
+        public MBWindow window;
+        public bool IsLoaded = false;
 
         public State(string name, MBWindow window)
         {
@@ -14,12 +15,22 @@ namespace MutaBrains.States
             this.window = window;
         }
 
-        public virtual void OnLoad() { }
+        public virtual void OnLoad() {
+            IsLoaded = true;
+        }
 
-        public virtual void OnResize(ResizeEventArgs e) { }
+        public virtual void OnResize(ResizeEventArgs e) {
+            if (!IsLoaded) { OnLoad(); return; }
+        }
 
-        public virtual void OnUpdate(FrameEventArgs args) { }
+        public virtual void OnUpdate(FrameEventArgs args) {
+            if (!IsLoaded) { OnLoad(); return; }
+        }
 
-        public virtual void OnDraw(FrameEventArgs args) { }
+        public virtual void OnDraw(FrameEventArgs args) {
+            if (!IsLoaded) { OnLoad(); return; }
+        }
+
+        public virtual void Dispose() { }
     }
 }

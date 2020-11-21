@@ -8,6 +8,7 @@ namespace MutaBrains.Windows
         public MainWindow(GameWindowSettings gwSettings, NativeWindowSettings nwSettings) : base(gwSettings, nwSettings)
         {
             AddState(new MainMenuState("main_menu", this));
+            AddState(new MLTestState("ml_test_menu", this));
             SelectState("main_menu");
         }
     }

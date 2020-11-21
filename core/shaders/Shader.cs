@@ -105,5 +105,10 @@ namespace MutaBrains.Core.Shaders
         {
             return GL.GetAttribLocation(Handle, attribName);
         }
+
+        public void Dispose()
+        {
+            GL.DeleteProgram(Handle);
+        }
     }
 }

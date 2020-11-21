@@ -5,6 +5,7 @@ using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Desktop;
 using MutaBrains.States;
 using MutaBrains.Core.FPS;
+using MutaBrains.Core.Managers;
 
 namespace MutaBrains.Windows
 {
@@ -13,9 +14,13 @@ namespace MutaBrains.Windows
         private List<State> states = new List<State>();
         private State selectedState;
 
-        public MBWindow(GameWindowSettings gameWindowSettings, NativeWindowSettings nativeWindowSettings) : base(gameWindowSettings, nativeWindowSettings) { }
+        public MBWindow(GameWindowSettings gameWindowSettings, NativeWindowSettings nativeWindowSettings) : base(gameWindowSettings, nativeWindowSettings) {
+            ShaderManager.Initialize();
+            CameraManager.Initialize(this.ClientSize.ToVector2(), Vector3.UnitZ * 10);
+            GUIManager.Initialize(this);
+        }
 
-        protected virtual void AddState(State state)
+        public virtual void AddState(State state)
         {
             if (!states.Contains(state))
             {
@@ -23,27 +28,31 @@ namespace MutaBrains.Windows
             }
         }
 
-        protected virtual void RemoveState(State state)
+        public virtual void RemoveState(State state)
         {
             if (states.Contains(state))
             {
+                state.Dispose();
                 states.Remove(state);
             }
         }
 
-        protected virtual State GetState(string name)
+        public virtual State GetState(string name)
         {
             return states.Find(s => s.Name == name.ToLower());
         }
 
-        protected virtual void SelectState(string name)
+        public virtual void SelectState(string name)
         {
+            if (selectedState != null) selectedState.Dispose();
             selectedState = states.Find(s => s.Name == name.ToLower());
+            selectedState.OnLoad();
         }
 
         protected override void OnLoad()
         {
             base.OnLoad();
+
             GL.Enable(EnableCap.Multisample);
             GL.Enable(EnableCap.CullFace);
             GL.FrontFace(FrontFaceDirection.Cw);
