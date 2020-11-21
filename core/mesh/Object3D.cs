@@ -13,6 +13,9 @@ namespace MutaBrains.Core.Mesh
         protected int vertexArray;
         protected int vertexLength;
 
+        protected uint[] vertexIndices;
+        protected int vertexIndicesBuffer;
+
         protected Vector3 position;
         protected float angle = 0.0f;
         protected Vector3 scale = Vector3.One;
@@ -48,6 +51,10 @@ namespace MutaBrains.Core.Mesh
             vertexArray = GL.GenVertexArray();
             GL.BindVertexArray(vertexArray);
 
+            vertexIndicesBuffer = GL.GenBuffer();
+            GL.BindBuffer(BufferTarget.ElementArrayBuffer, vertexIndicesBuffer);
+            GL.BufferData(BufferTarget.ElementArrayBuffer, vertexIndices.Length * sizeof(uint), vertexIndices, BufferUsageHint.StaticDraw);
+
             GL.BindBuffer(BufferTarget.ArrayBuffer, vertexBuffer);
 
             int vertexLocation = ShaderManager.simpleMeshShader.GetAttribLocation("aPosition");
@@ -80,11 +87,19 @@ namespace MutaBrains.Core.Mesh
                 vertex_counter++;
             }
 
-            rotationMatrix = Matrix4.CreateRotationY(MathHelper.DegreesToRadians(angle));
-            scaleMatrix = Matrix4.CreateScale(scale);
-            translationMatrix = Matrix4.CreateTranslation(position);
+            vertexIndices = new uint[mesh.facesVertsIndxs.Count * 3];
+            vertex_counter = 0;
+            foreach (var faceVert in mesh.facesVertsIndxs)
+            {
+                vertexIndices[vertex_counter] = (uint)faceVert[0];
+                vertex_counter++;
+                vertexIndices[vertex_counter] = (uint)faceVert[1];
+                vertex_counter++;
+                vertexIndices[vertex_counter] = (uint)faceVert[2];
+                vertex_counter++;
+            }
 
-            modelMatrix = rotationMatrix * scaleMatrix * translationMatrix;
+            RefreshMatrices();
         }
 
         protected virtual void RefreshVertexBuffer()
@@ -94,6 +109,15 @@ namespace MutaBrains.Core.Mesh
             GL.BindBuffer(BufferTarget.ArrayBuffer, vertexBuffer);
             GL.BufferData(BufferTarget.ArrayBuffer, vertices.Length * sizeof(float), vertices, BufferUsageHint.StaticDraw);
             GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
+        }
+
+        protected virtual void RefreshMatrices()
+        {
+            rotationMatrix = Matrix4.CreateRotationY(MathHelper.DegreesToRadians(angle));
+            scaleMatrix = Matrix4.CreateScale(scale);
+            translationMatrix = Matrix4.CreateTranslation(position);
+
+            modelMatrix = rotationMatrix * scaleMatrix * translationMatrix;
         }
 
         public virtual void Update(double time, MouseState mouseState = null, KeyboardState keyboardState = null)
@@ -116,7 +140,7 @@ namespace MutaBrains.Core.Mesh
             }
 
             angle += 90.0f * (float)time; // 180 deg per second
-            RefreshVertexBuffer();
+            RefreshMatrices();
         }
 
         public virtual void Draw(double time)
@@ -131,7 +155,8 @@ namespace MutaBrains.Core.Mesh
                 ShaderManager.simpleMeshShader.SetMatrix4("view", CameraManager.Perspective.GetViewMatrix());
                 ShaderManager.simpleMeshShader.SetMatrix4("projection", CameraManager.Perspective.GetProjectionMatrix());
 
-                GL.DrawArrays(PrimitiveType.Triangles, 0, vertices.Length / vertexLength);
+                // GL.DrawArrays(PrimitiveType.Triangles, 0, vertices.Length / vertexLength);
+                GL.DrawElements(PrimitiveType.Triangles, vertexIndices.Length, DrawElementsType.UnsignedInt, 0);
             }
         }
     }
