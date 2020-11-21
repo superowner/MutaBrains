@@ -41,9 +41,9 @@ namespace MutaBrains.States
         {
             base.OnUpdate(args);
 
-            if (window.KeyboardState.IsKeyDown(Keys.Escape))
+            if (window.KeyboardState.IsKeyReleased(Keys.Escape))
             {
-                window.Close();
+                window.SelectState("main_menu");
             }
 
             pointer.Update(args.Time, window.MousePosition);

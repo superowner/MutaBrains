@@ -8,12 +8,12 @@ namespace MutaBrains
         static void Main(string[] args)
         {
             GameWindowSettings gwSettings = new GameWindowSettings {
-                IsMultiThreaded = true,
+                IsMultiThreaded = false,
             };
 
             NativeWindowSettings nwSettings = new NativeWindowSettings {
-                Size = new OpenTK.Mathematics.Vector2i(1280, 720),
-                // WindowState = OpenTK.Windowing.Common.WindowState.Fullscreen,
+                // Size = new OpenTK.Mathematics.Vector2i(1280, 720),
+                WindowState = OpenTK.Windowing.Common.WindowState.Fullscreen,
                 NumberOfSamples = 4,
                 Title = "MutaBrains",
                 WindowBorder = OpenTK.Windowing.Common.WindowBorder.Fixed,

@@ -15,12 +15,12 @@ namespace MutaBrains.States
 
         public override void OnLoad()
         {
-            base.OnLoad();
-
             window.CursorVisible = false;
 
             background = new Background("gui_background", window.ClientSize);
             pointer = new Pointer(window.MousePosition);
+
+            base.OnLoad();
         }
 
         public override void OnResize(ResizeEventArgs e)
@@ -37,7 +37,7 @@ namespace MutaBrains.States
             base.OnUpdate(args);
 
             pointer.Update(args.Time, window.MousePosition);
-            if (window.KeyboardState.IsKeyDown(Keys.Escape))
+            if (window.KeyboardState.IsKeyReleased(Keys.Escape))
             {
                 window.Close();
             }
