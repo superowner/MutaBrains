@@ -3,12 +3,15 @@ using OpenTK.Windowing.Common;
 using MutaBrains.Core.Managers;
 using MutaBrains.Windows;
 using MutaBrains.Core.GUI;
+using MutaBrains.Config;
+using MutaBrains.Core.Import.ObjLoader;
 
 namespace MutaBrains.States
 {
     public class MLTestState : State
     {
         Pointer pointer;
+        SimpleMesh brain;
 
         public MLTestState(string name, MBWindow window) : base(name, window) { }
 
@@ -17,6 +20,10 @@ namespace MutaBrains.States
             window.CursorVisible = false;
 
             pointer = new Pointer(window.MousePosition);
+            string path = Navigator.MeshPath("brain");
+            brain = SimpleMesh.LoadFromObj(path);
+
+            base.OnLoad();
         }
 
         public override void OnResize(ResizeEventArgs e)

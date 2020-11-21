@@ -9,6 +9,7 @@ namespace MutaBrains.Config
         public static string AssetsDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "assets");
         public static string ShadersDir = Path.Combine(AssetsDir, "shaders");
         public static string TexturesDir = Path.Combine(AssetsDir, "textures");
+        public static string MeshesDir = Path.Combine(AssetsDir, "meshes");
 
         public static string VertSahderPath(string name)
         {
@@ -30,6 +31,11 @@ namespace MutaBrains.Config
             }
 
             throw new FileNotFoundException("Can't load texture. File not found.", name);
+        }
+
+        public static string MeshPath(string name)
+        {
+            return Path.Combine(MeshesDir, name + ".obj");
         }
     }
 }
