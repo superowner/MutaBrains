@@ -3,6 +3,7 @@ using OpenTK.Graphics.OpenGL4;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 using MutaBrains.Core.Import.ObjLoader;
 using MutaBrains.Core.Managers;
+using System.Collections.Generic;
 
 namespace MutaBrains.Core.Mesh
 {
@@ -12,9 +13,6 @@ namespace MutaBrains.Core.Mesh
         protected int vertexBuffer;
         protected int vertexArray;
         protected int vertexLength;
-
-        protected uint[] vertexIndices;
-        protected int vertexIndicesBuffer;
 
         protected Vector3 position;
         protected float angle = 0.0f;
@@ -38,7 +36,7 @@ namespace MutaBrains.Core.Mesh
         {
             this.position = position;
             this.mesh = mesh;
-            vertexLength = 3;
+            vertexLength = 8;
 
             // scale = new Vector3(0.2f);
 
@@ -51,23 +49,19 @@ namespace MutaBrains.Core.Mesh
             vertexArray = GL.GenVertexArray();
             GL.BindVertexArray(vertexArray);
 
-            vertexIndicesBuffer = GL.GenBuffer();
-            GL.BindBuffer(BufferTarget.ElementArrayBuffer, vertexIndicesBuffer);
-            GL.BufferData(BufferTarget.ElementArrayBuffer, vertexIndices.Length * sizeof(uint), vertexIndices, BufferUsageHint.StaticDraw);
-
             GL.BindBuffer(BufferTarget.ArrayBuffer, vertexBuffer);
 
             int vertexLocation = ShaderManager.simpleMeshShader.GetAttribLocation("aPosition");
             GL.VertexAttribPointer(vertexLocation, 3, VertexAttribPointerType.Float, false, vertexLength * sizeof(float), 0);
             GL.EnableVertexAttribArray(vertexLocation);
 
-            // int normalLocation = ShaderManager.guiShader.GetAttribLocation("aNormal");
-            // GL.VertexAttribPointer(normalLocation, 3, VertexAttribPointerType.Float, false, vertexLength * sizeof(float), 3 * sizeof(float));
-            // GL.EnableVertexAttribArray(normalLocation);
+            int normalLocation = ShaderManager.simpleMeshShader.GetAttribLocation("aNormal");
+            GL.VertexAttribPointer(normalLocation, 3, VertexAttribPointerType.Float, false, vertexLength * sizeof(float), 3 * sizeof(float));
+            GL.EnableVertexAttribArray(normalLocation);
 
-            // int texCoordLocation = ShaderManager.guiShader.GetAttribLocation("aTexture");
-            // GL.VertexAttribPointer(texCoordLocation, 2, VertexAttribPointerType.Float, false, vertexLength * sizeof(float), 6 * sizeof(float));
-            // GL.EnableVertexAttribArray(texCoordLocation);
+            int texCoordLocation = ShaderManager.simpleMeshShader.GetAttribLocation("aTexture");
+            GL.VertexAttribPointer(texCoordLocation, 2, VertexAttribPointerType.Float, false, vertexLength * sizeof(float), 6 * sizeof(float));
+            GL.EnableVertexAttribArray(texCoordLocation);
 
             GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
             GL.BindVertexArray(0);
@@ -75,29 +69,47 @@ namespace MutaBrains.Core.Mesh
 
         protected virtual void InitializeVertices()
         {
-            vertices = new float[mesh.vertices.Count * 3];
-            int vertex_counter = 0;
-            foreach (Vector3 vertex in mesh.vertices)
+            List<float> vertsList = new List<float>();
+            int faceIndexCount = mesh.facesNormsIndxs.Count;
+
+            for (int i = 0; i < faceIndexCount; i++)
             {
-                vertices[vertex_counter] = vertex.X;
-                vertex_counter++;
-                vertices[vertex_counter] = vertex.Y;
-                vertex_counter++;
-                vertices[vertex_counter] = vertex.Z;
-                vertex_counter++;
+                var faceVerts = mesh.facesVertsIndxs[i];
+                var faceNormals = mesh.facesVertsIndxs[i];
+                var faceTextures = mesh.facesVertsIndxs[i];
+
+                for (int faceIndex = 0; faceIndex < 3; faceIndex++)
+                {
+                    int vertex = faceVerts[faceIndex];
+                    int normal = faceNormals[faceIndex];
+                    int texture = faceTextures[faceIndex];
+
+                    vertsList.Add(mesh.vertices[vertex - 1].X);
+                    vertsList.Add(mesh.vertices[vertex - 1].Y);
+                    vertsList.Add(mesh.vertices[vertex - 1].Z);
+
+                    if (mesh.normals.Count > 0) {
+                        vertsList.Add(mesh.normals[normal - 1].X);
+                        vertsList.Add(mesh.normals[normal - 1].Y);
+                        vertsList.Add(mesh.normals[normal - 1].Z);
+                    } else {
+                        vertsList.Add(0);
+                        vertsList.Add(1);
+                        vertsList.Add(0);
+                    }
+
+                    if (mesh.uvw.Count > 0)
+                    {
+                        vertsList.Add(mesh.uvw[texture - 1].X);
+                        vertsList.Add(mesh.uvw[texture - 1].Y);
+                    } else {
+                        vertsList.Add(0);
+                        vertsList.Add(0);
+                    }
+                }
             }
 
-            vertexIndices = new uint[mesh.facesVertsIndxs.Count * 3];
-            vertex_counter = 0;
-            foreach (var faceVert in mesh.facesVertsIndxs)
-            {
-                vertexIndices[vertex_counter] = (uint)faceVert[0];
-                vertex_counter++;
-                vertexIndices[vertex_counter] = (uint)faceVert[1];
-                vertex_counter++;
-                vertexIndices[vertex_counter] = (uint)faceVert[2];
-                vertex_counter++;
-            }
+            vertices = vertsList.ToArray();
 
             RefreshMatrices();
         }
@@ -123,30 +135,36 @@ namespace MutaBrains.Core.Mesh
         public virtual void Update(double time, MouseState mouseState = null, KeyboardState keyboardState = null)
         {
             float step = 10.0f * (float)time;
-            if (keyboardState.IsKeyDown(Keys.Right)) {
+            if (keyboardState.IsKeyDown(Keys.Right))
+            {
                 position.X += step;
             }
 
-            if (keyboardState.IsKeyDown(Keys.Left)) {
+            if (keyboardState.IsKeyDown(Keys.Left))
+            {
                 position.X -= step;
             }
 
-            if (keyboardState.IsKeyDown(Keys.Up)) {
+            if (keyboardState.IsKeyDown(Keys.Up))
+            {
                 position.Y += step;
             }
 
-            if (keyboardState.IsKeyDown(Keys.Down)) {
+            if (keyboardState.IsKeyDown(Keys.Down))
+            {
                 position.Y -= step;
             }
 
-            angle += 90.0f * (float)time; // 180 deg per second
+            angle += 45.0f * (float)time;
             RefreshMatrices();
         }
 
         public virtual void Draw(double time)
         {
-            if (visible) {
+            if (visible)
+            {
                 GL.Enable(EnableCap.DepthTest);
+                GL.FrontFace(FrontFaceDirection.Ccw);
 
                 GL.BindVertexArray(vertexArray);
 
@@ -155,8 +173,8 @@ namespace MutaBrains.Core.Mesh
                 ShaderManager.simpleMeshShader.SetMatrix4("view", CameraManager.Perspective.GetViewMatrix());
                 ShaderManager.simpleMeshShader.SetMatrix4("projection", CameraManager.Perspective.GetProjectionMatrix());
 
-                // GL.DrawArrays(PrimitiveType.Triangles, 0, vertices.Length / vertexLength);
-                GL.DrawElements(PrimitiveType.Triangles, vertexIndices.Length, DrawElementsType.UnsignedInt, 0);
+                GL.DrawArrays(PrimitiveType.Triangles, 0, vertices.Length / vertexLength);
+                GL.FrontFace(FrontFaceDirection.Cw);
             }
         }
     }
