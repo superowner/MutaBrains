@@ -4,6 +4,7 @@ using OpenTK.Windowing.GraphicsLibraryFramework;
 using MutaBrains.Core.Import.ObjLoader;
 using MutaBrains.Core.Managers;
 using System.Collections.Generic;
+using MutaBrains.Core.Import.AssimpLoader;
 
 namespace MutaBrains.Core.Mesh
 {
@@ -29,6 +30,7 @@ namespace MutaBrains.Core.Mesh
 
         public Object3D(SimpleMesh mesh, Vector3 position)
         {
+            AssimpModel.Test();
             Initialize(mesh, position);
         }
 
@@ -38,7 +40,7 @@ namespace MutaBrains.Core.Mesh
             this.mesh = mesh;
             vertexLength = 8;
 
-            // scale = new Vector3(0.2f);
+            // scale = new Vector3(1.5f, 1, 1);
 
             InitializeVertices();
 
@@ -110,6 +112,8 @@ namespace MutaBrains.Core.Mesh
             }
 
             vertices = vertsList.ToArray();
+
+            vertices = AssimpModel.vertices;
 
             RefreshMatrices();
         }
@@ -205,7 +209,7 @@ namespace MutaBrains.Core.Mesh
                 // ShaderManager.simpleMeshShader.SetFloat("spotLight.cutOff", LightManager.GetLight("spot").CutOff);
                 // ShaderManager.simpleMeshShader.SetFloat("spotLight.outerCutOff", LightManager.GetLight("spot").CutOffOuter);
 
-                GL.DrawArrays(PrimitiveType.Triangles, 0, vertices.Length / vertexLength);
+                GL.DrawArrays(OpenTK.Graphics.OpenGL4.PrimitiveType.Triangles, 0, vertices.Length / vertexLength);
                 GL.FrontFace(FrontFaceDirection.Cw);
             }
         }
