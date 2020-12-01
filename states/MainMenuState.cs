@@ -4,7 +4,6 @@ using OpenTK.Windowing.Common;
 using MutaBrains.Core.Managers;
 using MutaBrains.Windows;
 using MutaBrains.Core.GUI;
-using MutaBrains.Core.Import;
 
 namespace MutaBrains.States
 {

@@ -5,7 +5,6 @@ using OpenTK.Graphics.OpenGL4;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 using MutaBrains.Core.Managers;
 using MutaBrains.Core.Textures;
-using MutaBrains.Core.Import;
 
 namespace MutaBrains.Core.Import.AssimpLoader
 {

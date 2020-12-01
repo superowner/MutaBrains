@@ -1,7 +1,7 @@
 using System;
 using System.IO;
 
-namespace MutaBrains.Core.Import
+namespace MutaBrains
 {
     public static class Navigator
     {

@@ -4,7 +4,6 @@ using System.Text;
 using System.Collections.Generic;
 using OpenTK.Mathematics;
 using OpenTK.Graphics.OpenGL4;
-using MutaBrains.Core.Import;
 
 namespace MutaBrains.Core.Shaders
 {

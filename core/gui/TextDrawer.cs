@@ -4,7 +4,6 @@ using SixLabors.ImageSharp.Processing;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Drawing.Processing;
 using SixLabors.Fonts;
-using MutaBrains.Core.Import;
 
 namespace MutaBrains.Core.GUI
 {

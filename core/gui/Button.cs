@@ -1,7 +1,6 @@
 using System.IO;
 using OpenTK.Mathematics;
 using MutaBrains.Core.Textures;
-using MutaBrains.Core.Import;
 
 namespace MutaBrains.Core.GUI
 {
