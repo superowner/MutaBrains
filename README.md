@@ -10,7 +10,7 @@
 ![Manjaro Linux Logo](https://upload.wikimedia.org/wikipedia/commons/thumb/3/3e/Manjaro-logo.svg/100px-Manjaro-logo.svg.png)
 Developed and tested by me on latest manjaro release
 
-### TODO:
+## TODO:
 * Static models
 * Animated models
 * Physics
