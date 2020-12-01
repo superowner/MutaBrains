@@ -1,37 +1,29 @@
-## Welcome to GitHub Pages
+## Welcome to MutaBrains project page
 
-You can use the [editor on GitHub](https://github.com/alehlipka/MutaBrains/edit/gh-pages/index.md) to maintain and preview the content for your website in Markdown files.
+#### 3D Game made (work in progress) with OpenGL (OpenTK) and machine learning algorithms on .Net Core
 
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
+### Workflows
+![.NET Core Ubuntu](https://github.com/alehlipka/MutaBrains/workflows/.NET%20Core%20Ubuntu/badge.svg)
+![.NET Core Windows](https://github.com/alehlipka/MutaBrains/workflows/.NET%20Core%20Windows/badge.svg)
+![.NET Core MacOS](https://github.com/alehlipka/MutaBrains/workflows/.NET%20Core%20MacOS/badge.svg)
 
-### Markdown
+![Manjaro Linux Logo](https://upload.wikimedia.org/wikipedia/commons/thumb/3/3e/Manjaro-logo.svg/100px-Manjaro-logo.svg.png)
+Developed and tested by me on latest manjaro release
 
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
+## TODO:
+* Static models
+* Animated models
+* Physics
+* Q-learning algorythm
 
-```markdown
-Syntax highlighted code block
+### How to run
 
-# Header 1
-## Header 2
-### Header 3
+Easy as run any NetCore application.
+First thing - you must install DotNet SDK, then
 
-- Bulleted
-- List
-
-1. Numbered
-2. List
-
-**Bold** and _Italic_ and `Code` text
-
-[Link](url) and ![Image](src)
+```bash
+cd to/project/dir/in/your/pc
+dotnet run
 ```
 
-For more details see [GitHub Flavored Markdown](https://guides.github.com/features/mastering-markdown/).
-
-### Jekyll Themes
-
-Your Pages site will use the layout and styles from the Jekyll theme you have selected in your [repository settings](https://github.com/alehlipka/MutaBrains/settings). The name of this theme is saved in the Jekyll `_config.yml` configuration file.
-
-### Support or Contact
-
-Having trouble with Pages? Check out our [documentation](https://docs.github.com/categories/github-pages-basics/) or [contact support](https://github.com/contact) and we’ll help you sort it out.
+For more details see [Microsoft DotNet Page](https://dotnet.microsoft.com/).
