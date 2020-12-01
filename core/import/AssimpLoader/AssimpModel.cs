@@ -5,6 +5,7 @@ using OpenTK.Graphics.OpenGL4;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 using MutaBrains.Core.Managers;
 using MutaBrains.Core.Textures;
+using MutaBrains.Core.Import;
 
 namespace MutaBrains.Core.Import.AssimpLoader
 {
@@ -16,7 +17,7 @@ namespace MutaBrains.Core.Import.AssimpLoader
         protected int vertexLength;
 
         protected Vector3 position;
-        protected float angle = 0.0f;
+        protected Vector3 angle = Vector3.Zero;
         protected Vector3 scale = Vector3.One;
 
         protected Matrix4 rotationMatrix;
@@ -88,7 +89,7 @@ namespace MutaBrains.Core.Import.AssimpLoader
                 Material material = scene.Materials[mesh.MaterialIndex];
                 int diff_texture_index = material.TextureDiffuse.TextureIndex;
                 List<Vector3D> textures = mesh.TextureCoordinateChannels[diff_texture_index];
-                // texture = AssetImporter.LoadTexture(Name + "_texture", )
+                texture = AssetImporter.LoadTexture(System.IO.Path.Combine(System.IO.Path.GetDirectoryName(Path), material.TextureDiffuse.FilePath));
 
                 foreach (Face face in mesh.Faces)
                 {
@@ -133,9 +134,9 @@ namespace MutaBrains.Core.Import.AssimpLoader
         protected virtual void RefreshMatrices()
         {
             rotationMatrix =
-                Matrix4.CreateRotationX(MathHelper.DegreesToRadians(angle)) *
-                Matrix4.CreateRotationY(MathHelper.DegreesToRadians(angle)) *
-                Matrix4.CreateRotationZ(MathHelper.DegreesToRadians(angle));
+                Matrix4.CreateRotationX(MathHelper.DegreesToRadians(angle.X)) *
+                Matrix4.CreateRotationY(MathHelper.DegreesToRadians(angle.Y)) *
+                Matrix4.CreateRotationZ(MathHelper.DegreesToRadians(angle.Z));
             scaleMatrix = Matrix4.CreateScale(scale);
             translationMatrix = Matrix4.CreateTranslation(position);
 
@@ -144,7 +145,8 @@ namespace MutaBrains.Core.Import.AssimpLoader
 
         public virtual void Update(double time, MouseState mouseState = null, KeyboardState keyboardState = null)
         {
-            float step = 10.0f * (float)time;
+            float step = 1.0f * (float)time;
+            float rot = 25.0f * (float)time;
             if (keyboardState.IsKeyDown(Keys.Right))
             {
                 position.X += step;
@@ -165,7 +167,21 @@ namespace MutaBrains.Core.Import.AssimpLoader
                 position.Y -= step;
             }
 
-            angle += 45.0f * (float)time;
+            if (keyboardState.IsKeyDown(Keys.X))
+            {
+                angle.X += rot;
+            }
+
+            if (keyboardState.IsKeyDown(Keys.Y))
+            {
+                angle.Y += rot;
+            }
+
+            if (keyboardState.IsKeyDown(Keys.Z))
+            {
+                angle.Z += rot;
+            }
+
             RefreshMatrices();
         }
 
@@ -177,6 +193,7 @@ namespace MutaBrains.Core.Import.AssimpLoader
                 GL.FrontFace(FrontFaceDirection.Ccw);
 
                 GL.BindVertexArray(vertexArray);
+                texture.Use();
 
                 ShaderManager.simpleMeshShader.Use();
                 ShaderManager.simpleMeshShader.SetMatrix4("model", modelMatrix);
