@@ -4,7 +4,7 @@ using System.Text;
 using System.Collections.Generic;
 using OpenTK.Mathematics;
 using OpenTK.Graphics.OpenGL4;
-using MutaBrains.Config;
+using MutaBrains.Core.Import;
 
 namespace MutaBrains.Core.Shaders
 {
@@ -15,12 +15,12 @@ namespace MutaBrains.Core.Shaders
 
         public Shader(string name)
         {
-            var shaderSource = LoadSource(Navigator.VertSahderPath(name));
+            var shaderSource = LoadSource(Path.Combine(Navigator.ShadersDir, name, name + ".vert"));
             var vertexShader = GL.CreateShader(ShaderType.VertexShader);
             GL.ShaderSource(vertexShader, shaderSource);
             CompileShader(vertexShader);
 
-            shaderSource = LoadSource(Navigator.FragSahderPath(name));
+            shaderSource = LoadSource(Path.Combine(Navigator.ShadersDir, name, name + ".frag"));
             var fragmentShader = GL.CreateShader(ShaderType.FragmentShader);
             GL.ShaderSource(fragmentShader, shaderSource);
             CompileShader(fragmentShader);

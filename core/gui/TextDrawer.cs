@@ -1,9 +1,10 @@
+using System.IO;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Processing;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Drawing.Processing;
 using SixLabors.Fonts;
-using MutaBrains.Config;
+using MutaBrains.Core.Import;
 
 namespace MutaBrains.Core.GUI
 {
@@ -16,13 +17,13 @@ namespace MutaBrains.Core.GUI
         public static void Initialize()
         {
             collection = new FontCollection();
-            family = collection.Install(@"assets/fonts/OpenSans-Bold.ttf");
+            family = collection.Install(Path.Combine(Navigator.FontsDir, "OpenSans-Bold.ttf"));
         }
 
-        public static Image<Rgba32> DrawOnTexture(string texture_name, string text, float x = 0, float y = 0, float font_size = 24, FontStyle style = FontStyle.Regular)
+        public static Image<Rgba32> DrawOnTexture(string path, string text, float x = 0, float y = 0, float font_size = 24, FontStyle style = FontStyle.Regular)
         {
             font = family.CreateFont(font_size, style);
-            Image<Rgba32> image = Image.Load<Rgba32>(Navigator.TexturePath(texture_name));
+            Image<Rgba32> image = Image.Load<Rgba32>(path);
             return DrawOnTexture(image, text, x, y, font_size, style);
         }
 

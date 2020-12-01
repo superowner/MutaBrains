@@ -5,10 +5,9 @@ namespace MutaBrains.Core.GUI
 {
     class Background : Component
     {
-        public Background(string texture_name, Vector2i clientSize)
+        public Background(string path, Vector2i clientSize)
         {
-            AssetImporter.LoadTexture(texture_name);
-            texture = AssetImporter.GetTexture(texture_name);
+            texture = AssetImporter.LoadTexture(path);
 
             Initialize(new Vector2(clientSize.X, clientSize.Y), new Vector3(clientSize.X / 2.0f, clientSize.Y / 2.0f, 0));
         }

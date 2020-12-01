@@ -1,11 +1,12 @@
-using OpenTK.Windowing.GraphicsLibraryFramework;
+using System.IO;
+using OpenTK.Mathematics;
 using OpenTK.Windowing.Common;
+using OpenTK.Windowing.GraphicsLibraryFramework;
 using MutaBrains.Core.Managers;
 using MutaBrains.Windows;
 using MutaBrains.Core.GUI;
+using MutaBrains.Core.Import.AssimpLoader;
 using MutaBrains.Core.Import;
-using MutaBrains.Core.Mesh;
-using OpenTK.Mathematics;
 
 namespace MutaBrains.States
 {
@@ -13,7 +14,7 @@ namespace MutaBrains.States
     {
         Background background;
         Pointer pointer;
-        Object3D brain;
+        AssimpModel brain;
 
         public MLTestState(string name, MBWindow window) : base(name, window) { }
 
@@ -21,9 +22,9 @@ namespace MutaBrains.States
         {
             window.CursorVisible = false;
 
-            background = new Background("gui_background", window.ClientSize);
+            background = new Background(Path.Combine(Navigator.TexturesDir, "gui", "gui_background.png"), window.ClientSize);
             pointer = new Pointer(window.MousePosition);
-            brain = new Object3D(AssetImporter.GetSimpleMesh("brain-simple-mesh"), new Vector3(0.0f, 0.0f, 0.0f));
+            brain = new AssimpModel("book", Path.Combine(Navigator.MeshesDir, "book", "book.obj"), Vector3.Zero);
 
             base.OnLoad();
         }

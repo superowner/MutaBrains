@@ -1,6 +1,7 @@
+using System.IO;
 using OpenTK.Mathematics;
-using MutaBrains.Core.Import;
 using OpenTK.Windowing.GraphicsLibraryFramework;
+using MutaBrains.Core.Import;
 
 namespace MutaBrains.Core.GUI
 {
@@ -8,8 +9,7 @@ namespace MutaBrains.Core.GUI
     {
         public Pointer(Vector2 startPosition)
         {
-            AssetImporter.LoadTexture("pointer_default");
-            texture = AssetImporter.GetTexture("pointer_default");
+            texture = AssetImporter.LoadTexture(Path.Combine(Navigator.TexturesDir, "pointers", "pointer_default.png"));
 
             Initialize(texture.Size, new Vector3(startPosition));
         }

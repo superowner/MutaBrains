@@ -1,8 +1,10 @@
+using System.IO;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 using OpenTK.Windowing.Common;
 using MutaBrains.Core.Managers;
 using MutaBrains.Windows;
 using MutaBrains.Core.GUI;
+using MutaBrains.Core.Import;
 
 namespace MutaBrains.States
 {
@@ -17,7 +19,7 @@ namespace MutaBrains.States
         {
             window.CursorVisible = false;
 
-            background = new Background("gui_background", window.ClientSize);
+            background = new Background(Path.Combine(Navigator.TexturesDir, "gui", "gui_background.png"), window.ClientSize);
             pointer = new Pointer(window.MousePosition);
 
             base.OnLoad();
