@@ -16,7 +16,7 @@ namespace MutaBrains.Windows
 
         public MBWindow(GameWindowSettings gameWindowSettings, NativeWindowSettings nativeWindowSettings) : base(gameWindowSettings, nativeWindowSettings) {
             ShaderManager.Initialize();
-            CameraManager.Initialize(this.ClientSize.ToVector2(), Vector3.UnitZ * 2);
+            CameraManager.Initialize(this.ClientSize.ToVector2(), Vector3.UnitZ * 4);
             GUIManager.Initialize(this);
         }
 

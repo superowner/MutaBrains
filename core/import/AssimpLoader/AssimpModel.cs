@@ -4,10 +4,8 @@ using OpenTK.Mathematics;
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 using BepuPhysics;
-using BepuUtilities.Memory;
 using MutaBrains.Core.Managers;
 using MutaBrains.Core.Textures;
-using MutaBrains.Core.Physics;
 using BepuPhysics.Collidables;
 
 namespace MutaBrains.Core.Import.AssimpLoader
@@ -31,39 +29,43 @@ namespace MutaBrains.Core.Import.AssimpLoader
         protected Texture texture;
         protected Scene scene;
 
-        protected BufferPool bufferPool;
-        protected Simulation simulation;
         protected BodyHandle bodyHandle;
+        protected Simulation simulation;
 
         public string Name;
         public bool Visible = true;
         public string Path;
 
-        public AssimpModel(string name, string path, Vector3 startPosition)
+        public AssimpModel(string name, string path, Vector3 startPosition, Simulation simulation)
         {
-            Initialize(name, path, startPosition);
+            Initialize(name, path, startPosition, simulation);
         }
 
-        protected virtual void Initialize(string name, string path, Vector3 initializePosition)
+        protected virtual void Initialize(string name, string path, Vector3 initializePosition, Simulation simulation)
         {
+            this.simulation = simulation;
+
             Name = name;
             Path = path;
 
             Assimp.AssimpContext importer = new AssimpContext();
             scene = importer.ImportFile(Path,
+                PostProcessSteps.GenerateBoundingBoxes |
                 PostProcessSteps.CalculateTangentSpace |
                 PostProcessSteps.GenerateUVCoords |
                 PostProcessSteps.Triangulate |
                 PostProcessSteps.JoinIdenticalVertices |
                 PostProcessSteps.SortByPrimitiveType);
 
-            bufferPool = new BufferPool();
-            simulation = Simulation.Create(bufferPool, new NarrowPhaseCallback(), new PoseIntegratorCallback(new System.Numerics.Vector3(0, -10, 0)), new PositionFirstTimestepper());
-            Box boxShape = new Box(1, 1, 1);
+            float b_x = scene.Meshes[1].BoundingBox.Max.X - scene.Meshes[1].BoundingBox.Min.X;
+            float b_y = scene.Meshes[1].BoundingBox.Max.Y - scene.Meshes[1].BoundingBox.Min.Y;
+            float b_z = scene.Meshes[1].BoundingBox.Max.Z - scene.Meshes[1].BoundingBox.Min.Z;
+
+            Box boxShape = new Box(b_x, b_y, b_z);
             boxShape.ComputeInertia(1, out BodyInertia boxInertia);
             TypedIndex boxIndex = simulation.Shapes.Add(boxShape);
             bodyHandle = simulation.Bodies.Add(BodyDescription.CreateDynamic(new System.Numerics.Vector3(initializePosition.X, initializePosition.Y, initializePosition.Z), boxInertia, new CollidableDescription(boxIndex, 0.1f), new BodyActivityDescription(0.01f)));
-            simulation.Statics.Add(new StaticDescription(new System.Numerics.Vector3(0, -1.5f, 0), new CollidableDescription(simulation.Shapes.Add(new Box(2500, 1, 2500)), 0.1f)));
+            simulation.Statics.Add(new StaticDescription(new System.Numerics.Vector3(0, -1.5f, 0), new CollidableDescription(simulation.Shapes.Add(new Box(10, 1, 10)), 0.1f)));
 
             position = initializePosition;
             vertexLength = 8;
@@ -160,8 +162,6 @@ namespace MutaBrains.Core.Import.AssimpLoader
 
         public virtual void Update(double time, MouseState mouseState = null, KeyboardState keyboardState = null)
         {
-            simulation.Timestep((float)time);
-
             float step = 1.0f * (float)time;
             float rot = 25.0f * (float)time;
             if (keyboardState.IsKeyDown(Keys.Right))
@@ -201,6 +201,8 @@ namespace MutaBrains.Core.Import.AssimpLoader
 
             BodyReference bodyReference = simulation.Bodies.GetBodyReference(bodyHandle);
             position = new Vector3(bodyReference.Pose.Position.X, bodyReference.Pose.Position.Y, bodyReference.Pose.Position.Z);
+
+            // TODO: OBJECT ROTATION
 
             RefreshMatrices();
         }
@@ -253,6 +255,8 @@ namespace MutaBrains.Core.Import.AssimpLoader
                 // ShaderManager.simpleMeshShader.SetFloat("spotLight.outerCutOff", LightManager.GetLight("spot").CutOffOuter);
 
                 GL.DrawArrays(OpenTK.Graphics.OpenGL4.PrimitiveType.Triangles, 0, vertices.Length / vertexLength);
+
+
                 GL.FrontFace(FrontFaceDirection.Cw);
             }
         }
