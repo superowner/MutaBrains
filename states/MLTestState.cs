@@ -23,7 +23,7 @@ namespace MutaBrains.States
 
             background = new Background(Path.Combine(Navigator.TexturesDir, "gui", "gui_background.png"), window.ClientSize);
             pointer = new Pointer(window.MousePosition);
-            brain = new AssimpModel("book", Path.Combine(Navigator.MeshesDir, "book", "book.obj"), Vector3.Zero);
+            brain = new AssimpModel("book", Path.Combine(Navigator.MeshesDir, "book", "book.obj"), new Vector3(0, 5, 0));
 
             base.OnLoad();
         }

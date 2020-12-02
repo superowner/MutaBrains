@@ -3,8 +3,12 @@ using Assimp;
 using OpenTK.Mathematics;
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Windowing.GraphicsLibraryFramework;
+using BepuPhysics;
+using BepuUtilities.Memory;
 using MutaBrains.Core.Managers;
 using MutaBrains.Core.Textures;
+using MutaBrains.Core.Physics;
+using BepuPhysics.Collidables;
 
 namespace MutaBrains.Core.Import.AssimpLoader
 {
@@ -27,6 +31,10 @@ namespace MutaBrains.Core.Import.AssimpLoader
         protected Texture texture;
         protected Scene scene;
 
+        protected BufferPool bufferPool;
+        protected Simulation simulation;
+        protected BodyHandle bodyHandle;
+
         public string Name;
         public bool Visible = true;
         public string Path;
@@ -48,6 +56,14 @@ namespace MutaBrains.Core.Import.AssimpLoader
                 PostProcessSteps.Triangulate |
                 PostProcessSteps.JoinIdenticalVertices |
                 PostProcessSteps.SortByPrimitiveType);
+
+            bufferPool = new BufferPool();
+            simulation = Simulation.Create(bufferPool, new NarrowPhaseCallback(), new PoseIntegratorCallback(new System.Numerics.Vector3(0, -10, 0)), new PositionFirstTimestepper());
+            Box boxShape = new Box(1, 1, 1);
+            boxShape.ComputeInertia(1, out BodyInertia boxInertia);
+            TypedIndex boxIndex = simulation.Shapes.Add(boxShape);
+            bodyHandle = simulation.Bodies.Add(BodyDescription.CreateDynamic(new System.Numerics.Vector3(initializePosition.X, initializePosition.Y, initializePosition.Z), boxInertia, new CollidableDescription(boxIndex, 0.1f), new BodyActivityDescription(0.01f)));
+            simulation.Statics.Add(new StaticDescription(new System.Numerics.Vector3(0, -1.5f, 0), new CollidableDescription(simulation.Shapes.Add(new Box(2500, 1, 2500)), 0.1f)));
 
             position = initializePosition;
             vertexLength = 8;
@@ -144,6 +160,8 @@ namespace MutaBrains.Core.Import.AssimpLoader
 
         public virtual void Update(double time, MouseState mouseState = null, KeyboardState keyboardState = null)
         {
+            simulation.Timestep((float)time);
+
             float step = 1.0f * (float)time;
             float rot = 25.0f * (float)time;
             if (keyboardState.IsKeyDown(Keys.Right))
@@ -180,6 +198,9 @@ namespace MutaBrains.Core.Import.AssimpLoader
             {
                 angle.Z += rot;
             }
+
+            BodyReference bodyReference = simulation.Bodies.GetBodyReference(bodyHandle);
+            position = new Vector3(bodyReference.Pose.Position.X, bodyReference.Pose.Position.Y, bodyReference.Pose.Position.Z);
 
             RefreshMatrices();
         }
