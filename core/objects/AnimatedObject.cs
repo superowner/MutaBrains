@@ -3,20 +3,12 @@ using OpenTK.Mathematics;
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 using Assimp;
-using BepuPhysics;
-using BepuPhysics.Collidables;
 using MutaBrains.Core.Managers;
 using MutaBrains.Core.Textures;
 
 namespace MutaBrains.Core.Objects
 {
-    public enum BoundingBoxType
-    {
-        Box,
-        Sphere
-    }
-
-    class StaticObject
+    class AnimatedObject
     {
         protected float[] vertices;
         protected int vertexBuffer;
@@ -32,30 +24,24 @@ namespace MutaBrains.Core.Objects
         protected Matrix4 translationMatrix;
         protected Matrix4 modelMatrix;
 
-        protected Texture texture;
+        protected Texture diffuseTexture = null;
+        protected Texture specularTexture = null;
         protected Scene scene;
-
-        protected BodyHandle bodyHandle;
-        protected Simulation simulation;
-        protected BoundingBoxType boundingBoxType;
 
         public string Name;
         public bool Visible = true;
         public string Path;
 
-        public StaticObject(string name, string path, Vector3 startPosition, BoundingBoxType boundingBoxType, Simulation simulation, Vector3 scale)
+        public AnimatedObject(string name, string path, Vector3 startPosition)
         {
-            Initialize(name, path, startPosition, boundingBoxType, simulation, scale);
+            Initialize(name, path, startPosition);
         }
 
-        protected virtual void Initialize(string name, string path, Vector3 initializePosition, BoundingBoxType boundingBoxType, Simulation simulation, Vector3 scale)
+        protected virtual void Initialize(string name, string path, Vector3 initializePosition)
         {
-            this.simulation = simulation;
-            this.boundingBoxType = boundingBoxType;
-            this.scale = scale;
-
             Name = name;
             Path = path;
+            scale = new Vector3(0.02f);
 
             Assimp.AssimpContext importer = new AssimpContext();
             scene = importer.ImportFile(Path,
@@ -83,21 +69,6 @@ namespace MutaBrains.Core.Objects
             b_x *= scale.X;
             b_y *= scale.Y;
             b_z *= scale.Z;
-
-            if (boundingBoxType == BoundingBoxType.Box)
-            {
-                Box boxShape = new Box(b_x, b_y, b_z);
-                boxShape.ComputeInertia(1, out BodyInertia boxInertia);
-                TypedIndex boxIndex = simulation.Shapes.Add(boxShape);
-                bodyHandle = simulation.Bodies.Add(BodyDescription.CreateDynamic(new System.Numerics.Vector3(initializePosition.X, initializePosition.Y, initializePosition.Z), boxInertia, new CollidableDescription(boxIndex, 0.1f), new BodyActivityDescription(0.01f)));
-            }
-            else
-            {
-                Sphere sphereShape = new Sphere(((b_x + b_y + b_z) / 3) / 2);
-                sphereShape.ComputeInertia(1, out BodyInertia sphereInertia);
-                TypedIndex sphereIndex = simulation.Shapes.Add(sphereShape);
-                bodyHandle = simulation.Bodies.Add(BodyDescription.CreateDynamic(new System.Numerics.Vector3(initializePosition.X, initializePosition.Y, initializePosition.Z), sphereInertia, new CollidableDescription(sphereIndex, 0.1f), new BodyActivityDescription(0.01f)));
-            }
 
             position = initializePosition;
             vertexLength = 8;
@@ -138,7 +109,13 @@ namespace MutaBrains.Core.Objects
                 Material material = scene.Materials[mesh.MaterialIndex];
                 int diff_texture_index = material.TextureDiffuse.TextureIndex;
                 List<Vector3D> textures = mesh.TextureCoordinateChannels[diff_texture_index];
-                texture = Texture.LoadTexture(System.IO.Path.Combine(System.IO.Path.GetDirectoryName(Path), material.TextureDiffuse.FilePath));
+
+                if (material.HasTextureDiffuse) {
+                    diffuseTexture = Texture.LoadTexture(System.IO.Path.Combine(System.IO.Path.GetDirectoryName(Path), material.TextureDiffuse.FilePath));
+                }
+                if (material.HasTextureSpecular) {
+                    specularTexture = Texture.LoadTexture(System.IO.Path.Combine(System.IO.Path.GetDirectoryName(Path), material.TextureSpecular.FilePath));
+                }
 
                 foreach (Face face in mesh.Faces)
                 {
@@ -195,13 +172,34 @@ namespace MutaBrains.Core.Objects
             modelMatrix = rotationMatrix * scaleMatrix * translationMatrix;
         }
 
+        private double animationTime = 0;
         public virtual void Update(double time, MouseState mouseState = null, KeyboardState keyboardState = null)
         {
-            BodyReference bodyReference = simulation.Bodies.GetBodyReference(bodyHandle);
-            position = new Vector3(bodyReference.Pose.Position.X, bodyReference.Pose.Position.Y, bodyReference.Pose.Position.Z);
-            quaternion = new OpenTK.Mathematics.Quaternion(bodyReference.Pose.Orientation.X, bodyReference.Pose.Orientation.Y, bodyReference.Pose.Orientation.Z, bodyReference.Pose.Orientation.W);
+            Animation idleAnimation = scene.Animations[0];
+            double animationTotalTime = idleAnimation.DurationInTicks * idleAnimation.TicksPerSecond;
+            foreach (NodeAnimationChannel animationChanel in idleAnimation.NodeAnimationChannels)
+            {
+                foreach (VectorKey position in animationChanel.PositionKeys) {
+                    double pos_time = position.Time;
+                    Vector3D pos_value = position.Value;
+                }
+
+                //bones
+
+                foreach (QuaternionKey rotation in animationChanel.RotationKeys) {
+                    
+                }
+
+                foreach (VectorKey scale in animationChanel.ScalingKeys) {
+                    
+                }
+            }
 
             RefreshMatrices();
+            animationTime += time;
+            if (animationTime >= animationTotalTime) {
+                animationTime = 0;
+            }
         }
 
         public virtual void Draw(double time)
@@ -212,7 +210,12 @@ namespace MutaBrains.Core.Objects
                 GL.FrontFace(FrontFaceDirection.Ccw);
 
                 GL.BindVertexArray(vertexArray);
-                texture.Use();
+                if (diffuseTexture != null) {
+                    diffuseTexture.Use(TextureUnit.Texture0);
+                }
+                if (specularTexture != null) {
+                    specularTexture.Use(TextureUnit.Texture1);
+                }
 
                 ShaderManager.simpleMeshShader.Use();
                 ShaderManager.simpleMeshShader.SetMatrix4("model", modelMatrix);
@@ -221,7 +224,7 @@ namespace MutaBrains.Core.Objects
                 ShaderManager.simpleMeshShader.SetVector3("viewPosition", CameraManager.Perspective.Position);
                 // Material
                 ShaderManager.simpleMeshShader.SetInt("material.diffuse", 0);
-                ShaderManager.simpleMeshShader.SetInt("material.specular", 0);
+                ShaderManager.simpleMeshShader.SetInt("material.specular", 1);
                 ShaderManager.simpleMeshShader.SetFloat("material.shininess", 2.0f);
                 // Directional light
                 ShaderManager.simpleMeshShader.SetVector3("dirLight.direction", new Vector3(-.1f));

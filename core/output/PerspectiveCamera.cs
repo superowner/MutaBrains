@@ -12,6 +12,11 @@ namespace MutaBrains.Core.Output
             Initialize(size, cameraPosition);
         }
 
+        public void Autofocus()
+        {
+            
+        }
+
         protected override void UpdateProjectionMatrix()
         {
             projectionMatrix = Matrix4.CreatePerspectiveFieldOfView(fov, aspectRatio, nearPlane, farPlane);

@@ -40,9 +40,13 @@ namespace MutaBrains.States
 
             modelsList = new List<StaticObject>();
             Random rnd = new Random();
-            for (int i = 0; i < 600; i++) {
+            for (int i = 0; i < 500; i++) {
                 Vector3 pos = new Vector3(rnd.Next(-4,4) * (float)rnd.NextDouble(), (float)rnd.NextDouble() * rnd.Next(2,20) + 8, rnd.Next(-4,4) * (float)rnd.NextDouble());
-                modelsList.Add(new StaticObject("book", Path.Combine(Navigator.MeshesDir, "book", "book.obj"), pos, simulation));
+                modelsList.Add(new StaticObject("book", Path.Combine(Navigator.MeshesDir, "book", "book.obj"), pos, BoundingBoxType.Box, simulation, Vector3.One));
+            }
+            for (int i = 0; i < 10; i++) {
+                Vector3 pos = new Vector3(rnd.Next(-4,4) * (float)rnd.NextDouble(), (float)rnd.NextDouble() * rnd.Next(2,20) + 10, rnd.Next(-4,4) * (float)rnd.NextDouble());
+                modelsList.Add(new StaticObject("brain", Path.Combine(Navigator.MeshesDir, "brain", "brain.obj"), pos, BoundingBoxType.Sphere, simulation, new Vector3(0.2f)));
             }
 
             base.OnLoad();
