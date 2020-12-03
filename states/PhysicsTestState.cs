@@ -33,14 +33,14 @@ namespace MutaBrains.States
             background = new Background(Path.Combine(Navigator.TexturesDir, "gui", "gui_background.png"), window.ClientSize);
             pointer = new Pointer(window.MousePosition);
             bufferPool = new BufferPool();
-            simulation = Simulation.Create(bufferPool, new NarrowPhaseCallback(), new PoseIntegratorCallback(new System.Numerics.Vector3(0, -6, 0)), new PositionFirstTimestepper());
+            simulation = Simulation.Create(bufferPool, new NarrowPhaseCallback(), new PoseIntegratorCallback(new System.Numerics.Vector3(0, -7, 0)), new PositionFirstTimestepper());
             simulation.Statics.Add(new StaticDescription(new System.Numerics.Vector3(0, -1.5f, 0), new CollidableDescription(simulation.Shapes.Add(new Box(100, 2, 100)), 0.1f)));
 
             CameraManager.Perspective.Position = new Vector3(0, 2, 12);
 
             modelsList = new List<StaticObject>();
             Random rnd = new Random();
-            for (int i = 0; i < 500; i++) {
+            for (int i = 0; i < 10; i++) {
                 Vector3 pos = new Vector3(rnd.Next(-4,4) * (float)rnd.NextDouble(), (float)rnd.NextDouble() * rnd.Next(2,20) + 8, rnd.Next(-4,4) * (float)rnd.NextDouble());
                 modelsList.Add(new StaticObject("book", Path.Combine(Navigator.MeshesDir, "book", "book.obj"), pos, BoundingBoxType.Box, simulation, Vector3.One));
             }
@@ -64,13 +64,26 @@ namespace MutaBrains.States
         public override void OnUpdate(FrameEventArgs args)
         {
             base.OnUpdate(args);
+            simulation.Timestep((float)args.Time);
+            Random rnd = new Random();
+            Vector3 pos = Vector3.One;
 
             if (window.KeyboardState.IsKeyReleased(Keys.Escape))
             {
                 window.SelectState("main_menu");
             }
 
-            simulation.Timestep((float)args.Time);
+            if (window.KeyboardState.IsKeyReleased(Keys.Space) || window.KeyboardState.IsKeyReleased(Keys.Enter)) {
+                for (int i = 0; i < 10; i++) {
+                    pos = new Vector3(rnd.Next(-4,4) * (float)rnd.NextDouble(), (float)rnd.NextDouble() * rnd.Next(2,20) + 8, rnd.Next(-4,4) * (float)rnd.NextDouble());
+                    modelsList.Add(new StaticObject("book", Path.Combine(Navigator.MeshesDir, "book", "book.obj"), pos, BoundingBoxType.Box, simulation, Vector3.One));
+                }
+            }
+
+            if (rnd.NextDouble() > 0.99) {
+                pos = new Vector3(rnd.Next(-4,4) * (float)rnd.NextDouble(), (float)rnd.NextDouble() * rnd.Next(2,20) + 8, rnd.Next(-4,4) * (float)rnd.NextDouble());
+                modelsList.Add(new StaticObject("book", Path.Combine(Navigator.MeshesDir, "book", "book.obj"), pos, BoundingBoxType.Box, simulation, Vector3.One));
+            }
 
             pointer.Update(args.Time, window.MousePosition);
             foreach (StaticObject model in modelsList)
