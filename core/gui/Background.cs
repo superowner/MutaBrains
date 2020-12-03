@@ -1,5 +1,5 @@
 using OpenTK.Mathematics;
-using MutaBrains.Core.Import;
+using MutaBrains.Core.Textures;
 
 namespace MutaBrains.Core.GUI
 {
@@ -7,7 +7,7 @@ namespace MutaBrains.Core.GUI
     {
         public Background(string path, Vector2i clientSize)
         {
-            texture = AssetImporter.LoadTexture(path);
+            texture = Texture.LoadTexture(path);
 
             Initialize(new Vector2(clientSize.X, clientSize.Y), new Vector3(clientSize.X / 2.0f, clientSize.Y / 2.0f, 0));
         }

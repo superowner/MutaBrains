@@ -1,9 +1,10 @@
-using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.PixelFormats;
-using SixLabors.ImageSharp.Processing;
+using System.Collections.Generic;
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
 using PixelFormat = OpenTK.Graphics.OpenGL4.PixelFormat;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.PixelFormats;
+using SixLabors.ImageSharp.Processing;
 
 namespace MutaBrains.Core.Textures
 {
@@ -12,6 +13,19 @@ namespace MutaBrains.Core.Textures
         public readonly int Handle;
         public string Path;
         public Vector2 Size;
+
+        private static List<Texture> textureList = new List<Texture>();
+
+        public static Texture LoadTexture(string path)
+        {
+            Texture texture = textureList.Find(t => t.Path == path);
+            if (texture == null) {
+                texture = new Texture(path);
+                textureList.Add(texture);
+            }
+
+            return texture;
+        }
 
         public Texture(string path)
         {

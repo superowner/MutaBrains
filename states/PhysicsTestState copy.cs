@@ -7,7 +7,7 @@ using OpenTK.Windowing.GraphicsLibraryFramework;
 using MutaBrains.Core.Managers;
 using MutaBrains.Windows;
 using MutaBrains.Core.GUI;
-using MutaBrains.Core.Import.AssimpLoader;
+using MutaBrains.Core.Objects;
 using BepuPhysics;
 using MutaBrains.Core.Physics;
 using BepuUtilities.Memory;
@@ -15,16 +15,16 @@ using BepuPhysics.Collidables;
 
 namespace MutaBrains.States
 {
-    public class MLTestState : State
+    public class PhysicsTestState : State
     {
         Background background;
         Pointer pointer;
         Simulation simulation;
         BufferPool bufferPool;
 
-        List<AssimpModel> modelsList;
+        List<StaticObject> modelsList;
 
-        public MLTestState(string name, MBWindow window) : base(name, window) { }
+        public PhysicsTestState(string name, MBWindow window) : base(name, window) { }
 
         public override void OnLoad()
         {
@@ -38,11 +38,11 @@ namespace MutaBrains.States
 
             CameraManager.Perspective.Position = new Vector3(0, 2, 12);
 
-            modelsList = new List<AssimpModel>();
+            modelsList = new List<StaticObject>();
             Random rnd = new Random();
             for (int i = 0; i < 600; i++) {
                 Vector3 pos = new Vector3(rnd.Next(-4,4) * (float)rnd.NextDouble(), (float)rnd.NextDouble() * rnd.Next(2,20) + 8, rnd.Next(-4,4) * (float)rnd.NextDouble());
-                modelsList.Add(new AssimpModel("book", Path.Combine(Navigator.MeshesDir, "book", "book.obj"), pos, simulation));
+                modelsList.Add(new StaticObject("book", Path.Combine(Navigator.MeshesDir, "book", "book.obj"), pos, simulation));
             }
 
             base.OnLoad();
@@ -69,7 +69,7 @@ namespace MutaBrains.States
             simulation.Timestep((float)args.Time);
 
             pointer.Update(args.Time, window.MousePosition);
-            foreach (AssimpModel model in modelsList)
+            foreach (StaticObject model in modelsList)
             {
                 model.Update(args.Time, window.MouseState, window.KeyboardState);
             }
@@ -80,7 +80,7 @@ namespace MutaBrains.States
             base.OnDraw(args);
 
             background.Draw(args.Time);
-            foreach (AssimpModel model in modelsList)
+            foreach (StaticObject model in modelsList)
             {
                 model.Draw(args.Time);
             }

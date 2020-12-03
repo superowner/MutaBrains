@@ -1,16 +1,16 @@
 using System.Collections.Generic;
-using Assimp;
 using OpenTK.Mathematics;
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Windowing.GraphicsLibraryFramework;
+using Assimp;
 using BepuPhysics;
+using BepuPhysics.Collidables;
 using MutaBrains.Core.Managers;
 using MutaBrains.Core.Textures;
-using BepuPhysics.Collidables;
 
-namespace MutaBrains.Core.Import.AssimpLoader
+namespace MutaBrains.Core.Objects
 {
-    class AssimpModel
+    class StaticObject
     {
         protected float[] vertices;
         protected int vertexBuffer;
@@ -36,7 +36,7 @@ namespace MutaBrains.Core.Import.AssimpLoader
         public bool Visible = true;
         public string Path;
 
-        public AssimpModel(string name, string path, Vector3 startPosition, Simulation simulation)
+        public StaticObject(string name, string path, Vector3 startPosition, Simulation simulation)
         {
             Initialize(name, path, startPosition, simulation);
         }
@@ -105,7 +105,7 @@ namespace MutaBrains.Core.Import.AssimpLoader
                 Material material = scene.Materials[mesh.MaterialIndex];
                 int diff_texture_index = material.TextureDiffuse.TextureIndex;
                 List<Vector3D> textures = mesh.TextureCoordinateChannels[diff_texture_index];
-                texture = AssetImporter.LoadTexture(System.IO.Path.Combine(System.IO.Path.GetDirectoryName(Path), material.TextureDiffuse.FilePath));
+                texture = Texture.LoadTexture(System.IO.Path.Combine(System.IO.Path.GetDirectoryName(Path), material.TextureDiffuse.FilePath));
 
                 foreach (Face face in mesh.Faces)
                 {
