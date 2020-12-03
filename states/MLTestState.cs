@@ -1,4 +1,6 @@
+using System;
 using System.IO;
+using System.Collections.Generic;
 using OpenTK.Mathematics;
 using OpenTK.Windowing.Common;
 using OpenTK.Windowing.GraphicsLibraryFramework;
@@ -9,6 +11,7 @@ using MutaBrains.Core.Import.AssimpLoader;
 using BepuPhysics;
 using MutaBrains.Core.Physics;
 using BepuUtilities.Memory;
+using BepuPhysics.Collidables;
 
 namespace MutaBrains.States
 {
@@ -16,15 +19,10 @@ namespace MutaBrains.States
     {
         Background background;
         Pointer pointer;
-        AssimpModel brain;
-        AssimpModel brain1;
-        AssimpModel brain2;
-        AssimpModel brain3;
-        AssimpModel brain4;
-        AssimpModel brain5;
-        AssimpModel brain6;
         Simulation simulation;
         BufferPool bufferPool;
+
+        List<AssimpModel> modelsList;
 
         public MLTestState(string name, MBWindow window) : base(name, window) { }
 
@@ -36,13 +34,16 @@ namespace MutaBrains.States
             pointer = new Pointer(window.MousePosition);
             bufferPool = new BufferPool();
             simulation = Simulation.Create(bufferPool, new NarrowPhaseCallback(), new PoseIntegratorCallback(new System.Numerics.Vector3(0, -6, 0)), new PositionFirstTimestepper());
-            brain = new AssimpModel("book", Path.Combine(Navigator.MeshesDir, "book", "book.obj"), new Vector3(0.1f, 0, 0), simulation);
-            brain1 = new AssimpModel("book", Path.Combine(Navigator.MeshesDir, "book", "book.obj"), new Vector3(-0.3f, 2, 0), simulation);
-            brain2 = new AssimpModel("book", Path.Combine(Navigator.MeshesDir, "book", "book.obj"), new Vector3(0.3f, 1, 0), simulation);
-            brain3 = new AssimpModel("book", Path.Combine(Navigator.MeshesDir, "book", "book.obj"), new Vector3(-0.1f, 3, 0), simulation);
-            brain4 = new AssimpModel("book", Path.Combine(Navigator.MeshesDir, "book", "book.obj"), new Vector3(-0.4f, 4, 0), simulation);
-            brain5 = new AssimpModel("book", Path.Combine(Navigator.MeshesDir, "book", "book.obj"), new Vector3(0.4f, 6, 0), simulation);
-            brain6 = new AssimpModel("book", Path.Combine(Navigator.MeshesDir, "book", "book.obj"), new Vector3(-0.1f, 5, 0), simulation);
+            simulation.Statics.Add(new StaticDescription(new System.Numerics.Vector3(0, -1.5f, 0), new CollidableDescription(simulation.Shapes.Add(new Box(100, 2, 100)), 0.1f)));
+
+            CameraManager.Perspective.Position = new Vector3(0, 2, 12);
+
+            modelsList = new List<AssimpModel>();
+            Random rnd = new Random();
+            for (int i = 0; i < 600; i++) {
+                Vector3 pos = new Vector3(rnd.Next(-4,4) * (float)rnd.NextDouble(), (float)rnd.NextDouble() * rnd.Next(2,20) + 8, rnd.Next(-4,4) * (float)rnd.NextDouble());
+                modelsList.Add(new AssimpModel("book", Path.Combine(Navigator.MeshesDir, "book", "book.obj"), pos, simulation));
+            }
 
             base.OnLoad();
         }
@@ -68,13 +69,10 @@ namespace MutaBrains.States
             simulation.Timestep((float)args.Time);
 
             pointer.Update(args.Time, window.MousePosition);
-            brain.Update(args.Time, window.MouseState, window.KeyboardState);
-            brain1.Update(args.Time, window.MouseState, window.KeyboardState);
-            brain2.Update(args.Time, window.MouseState, window.KeyboardState);
-            brain3.Update(args.Time, window.MouseState, window.KeyboardState);
-            brain4.Update(args.Time, window.MouseState, window.KeyboardState);
-            brain5.Update(args.Time, window.MouseState, window.KeyboardState);
-            brain6.Update(args.Time, window.MouseState, window.KeyboardState);
+            foreach (AssimpModel model in modelsList)
+            {
+                model.Update(args.Time, window.MouseState, window.KeyboardState);
+            }
         }
 
         public override void OnDraw(FrameEventArgs args)
@@ -82,13 +80,10 @@ namespace MutaBrains.States
             base.OnDraw(args);
 
             background.Draw(args.Time);
-            brain.Draw(args.Time);
-            brain1.Draw(args.Time);
-            brain2.Draw(args.Time);
-            brain3.Draw(args.Time);
-            brain4.Draw(args.Time);
-            brain5.Draw(args.Time);
-            brain6.Draw(args.Time);
+            foreach (AssimpModel model in modelsList)
+            {
+                model.Draw(args.Time);
+            }
             pointer.Draw(args.Time);
         }
 

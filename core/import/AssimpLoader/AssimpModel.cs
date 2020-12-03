@@ -65,7 +65,6 @@ namespace MutaBrains.Core.Import.AssimpLoader
             boxShape.ComputeInertia(1, out BodyInertia boxInertia);
             TypedIndex boxIndex = simulation.Shapes.Add(boxShape);
             bodyHandle = simulation.Bodies.Add(BodyDescription.CreateDynamic(new System.Numerics.Vector3(initializePosition.X, initializePosition.Y, initializePosition.Z), boxInertia, new CollidableDescription(boxIndex, 0.1f), new BodyActivityDescription(0.01f)));
-            simulation.Statics.Add(new StaticDescription(new System.Numerics.Vector3(0, -1.5f, 0), new CollidableDescription(simulation.Shapes.Add(new Box(10, 1, 10)), 0.1f)));
 
             position = initializePosition;
             vertexLength = 8;

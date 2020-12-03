@@ -11,6 +11,10 @@ namespace MutaBrains.Core.Output
         public Vector3 Position
         {
             get => position;
+            set {
+                position = value;
+                UpdateViewMatrix();
+            }
         }
 
         public Vector3 Front
