@@ -20,6 +20,9 @@ namespace MutaBrains.States
         AssimpModel brain1;
         AssimpModel brain2;
         AssimpModel brain3;
+        AssimpModel brain4;
+        AssimpModel brain5;
+        AssimpModel brain6;
         Simulation simulation;
         BufferPool bufferPool;
 
@@ -33,10 +36,13 @@ namespace MutaBrains.States
             pointer = new Pointer(window.MousePosition);
             bufferPool = new BufferPool();
             simulation = Simulation.Create(bufferPool, new NarrowPhaseCallback(), new PoseIntegratorCallback(new System.Numerics.Vector3(0, -6, 0)), new PositionFirstTimestepper());
-            brain = new AssimpModel("book", Path.Combine(Navigator.MeshesDir, "book", "book.obj"), new Vector3(0, 0, 0), simulation);
-            brain1 = new AssimpModel("book", Path.Combine(Navigator.MeshesDir, "book", "book.obj"), new Vector3(0.5f, 2, 0), simulation);
-            brain2 = new AssimpModel("book", Path.Combine(Navigator.MeshesDir, "book", "book.obj"), new Vector3(0.5f, 1, 0), simulation);
-            brain3 = new AssimpModel("book", Path.Combine(Navigator.MeshesDir, "book", "book.obj"), new Vector3(0, 3, 0), simulation);
+            brain = new AssimpModel("book", Path.Combine(Navigator.MeshesDir, "book", "book.obj"), new Vector3(0.1f, 0, 0), simulation);
+            brain1 = new AssimpModel("book", Path.Combine(Navigator.MeshesDir, "book", "book.obj"), new Vector3(-0.3f, 2, 0), simulation);
+            brain2 = new AssimpModel("book", Path.Combine(Navigator.MeshesDir, "book", "book.obj"), new Vector3(0.3f, 1, 0), simulation);
+            brain3 = new AssimpModel("book", Path.Combine(Navigator.MeshesDir, "book", "book.obj"), new Vector3(-0.1f, 3, 0), simulation);
+            brain4 = new AssimpModel("book", Path.Combine(Navigator.MeshesDir, "book", "book.obj"), new Vector3(-0.4f, 4, 0), simulation);
+            brain5 = new AssimpModel("book", Path.Combine(Navigator.MeshesDir, "book", "book.obj"), new Vector3(0.4f, 6, 0), simulation);
+            brain6 = new AssimpModel("book", Path.Combine(Navigator.MeshesDir, "book", "book.obj"), new Vector3(-0.1f, 5, 0), simulation);
 
             base.OnLoad();
         }
@@ -66,6 +72,9 @@ namespace MutaBrains.States
             brain1.Update(args.Time, window.MouseState, window.KeyboardState);
             brain2.Update(args.Time, window.MouseState, window.KeyboardState);
             brain3.Update(args.Time, window.MouseState, window.KeyboardState);
+            brain4.Update(args.Time, window.MouseState, window.KeyboardState);
+            brain5.Update(args.Time, window.MouseState, window.KeyboardState);
+            brain6.Update(args.Time, window.MouseState, window.KeyboardState);
         }
 
         public override void OnDraw(FrameEventArgs args)
@@ -77,6 +86,9 @@ namespace MutaBrains.States
             brain1.Draw(args.Time);
             brain2.Draw(args.Time);
             brain3.Draw(args.Time);
+            brain4.Draw(args.Time);
+            brain5.Draw(args.Time);
+            brain6.Draw(args.Time);
             pointer.Draw(args.Time);
         }
 

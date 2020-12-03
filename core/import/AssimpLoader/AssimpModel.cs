@@ -18,7 +18,7 @@ namespace MutaBrains.Core.Import.AssimpLoader
         protected int vertexLength;
 
         protected Vector3 position;
-        protected Vector3 angle = Vector3.Zero;
+        protected OpenTK.Mathematics.Quaternion quaternion = OpenTK.Mathematics.Quaternion.Identity;
         protected Vector3 scale = Vector3.One;
 
         protected Matrix4 rotationMatrix;
@@ -150,10 +150,7 @@ namespace MutaBrains.Core.Import.AssimpLoader
 
         protected virtual void RefreshMatrices()
         {
-            rotationMatrix =
-                Matrix4.CreateRotationX(MathHelper.DegreesToRadians(angle.X)) *
-                Matrix4.CreateRotationY(MathHelper.DegreesToRadians(angle.Y)) *
-                Matrix4.CreateRotationZ(MathHelper.DegreesToRadians(angle.Z));
+            rotationMatrix = Matrix4.CreateFromQuaternion(quaternion);
             scaleMatrix = Matrix4.CreateScale(scale);
             translationMatrix = Matrix4.CreateTranslation(position);
 
@@ -162,47 +159,9 @@ namespace MutaBrains.Core.Import.AssimpLoader
 
         public virtual void Update(double time, MouseState mouseState = null, KeyboardState keyboardState = null)
         {
-            float step = 1.0f * (float)time;
-            float rot = 25.0f * (float)time;
-            if (keyboardState.IsKeyDown(Keys.Right))
-            {
-                position.X += step;
-            }
-
-            if (keyboardState.IsKeyDown(Keys.Left))
-            {
-                position.X -= step;
-            }
-
-            if (keyboardState.IsKeyDown(Keys.Up))
-            {
-                position.Y += step;
-            }
-
-            if (keyboardState.IsKeyDown(Keys.Down))
-            {
-                position.Y -= step;
-            }
-
-            if (keyboardState.IsKeyDown(Keys.X))
-            {
-                angle.X += rot;
-            }
-
-            if (keyboardState.IsKeyDown(Keys.Y))
-            {
-                angle.Y += rot;
-            }
-
-            if (keyboardState.IsKeyDown(Keys.Z))
-            {
-                angle.Z += rot;
-            }
-
             BodyReference bodyReference = simulation.Bodies.GetBodyReference(bodyHandle);
             position = new Vector3(bodyReference.Pose.Position.X, bodyReference.Pose.Position.Y, bodyReference.Pose.Position.Z);
-
-            // TODO: OBJECT ROTATION
+            quaternion = new OpenTK.Mathematics.Quaternion(bodyReference.Pose.Orientation.X, bodyReference.Pose.Orientation.Y, bodyReference.Pose.Orientation.Z, bodyReference.Pose.Orientation.W);
 
             RefreshMatrices();
         }
