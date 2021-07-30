@@ -18,6 +18,7 @@ namespace MutaBrains.Windows
             ShaderManager.Initialize();
             CameraManager.Initialize(this.ClientSize.ToVector2(), Vector3.Zero);
             GUIManager.Initialize(this);
+            PhysicsManager.Initialize();
         }
 
         public virtual void AddState(State state)

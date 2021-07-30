@@ -1,22 +1,14 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using OpenTK.Mathematics;
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 using Assimp;
-using BepuPhysics;
-using BepuPhysics.Collidables;
 using MutaBrains.Core.Managers;
 using MutaBrains.Core.Textures;
 
 namespace MutaBrains.Core.Objects
 {
-    public enum BoundingBoxType
-    {
-        Box,
-        Sphere
-    }
-
-    class StaticObject
+    class Object3D
     {
         protected float[] vertices;
         protected int vertexBuffer;
@@ -24,7 +16,6 @@ namespace MutaBrains.Core.Objects
         protected int vertexLength;
 
         protected Vector3 position;
-        protected OpenTK.Mathematics.Quaternion quaternion = OpenTK.Mathematics.Quaternion.Identity;
         protected Vector3 scale = Vector3.One;
 
         protected Matrix4 rotationMatrix;
@@ -35,71 +26,30 @@ namespace MutaBrains.Core.Objects
         protected Texture texture;
         protected Scene scene;
 
-        protected BodyHandle bodyHandle;
-        protected Simulation simulation;
-        protected BoundingBoxType boundingBoxType;
+        public string name;
+        public bool visible = true;
+        public string path;
 
-        public string Name;
-        public bool Visible = true;
-        public string Path;
-
-        public StaticObject(string name, string path, Vector3 startPosition, BoundingBoxType boundingBoxType, Simulation simulation, Vector3 scale)
+        public Object3D(string name, string path, Vector3 position, Vector3 scale)
         {
-            Initialize(name, path, startPosition, boundingBoxType, simulation, scale);
+            Initialize(name, path, position, scale);
         }
 
-        protected virtual void Initialize(string name, string path, Vector3 initializePosition, BoundingBoxType boundingBoxType, Simulation simulation, Vector3 scale)
+        protected virtual void Initialize(string name, string path, Vector3 position, Vector3 scale)
         {
-            this.simulation = simulation;
-            this.boundingBoxType = boundingBoxType;
+            this.name = name;
+            this.path = path;
+            this.position = position;
             this.scale = scale;
 
-            Name = name;
-            Path = path;
-
-            Assimp.AssimpContext importer = new AssimpContext();
-            scene = importer.ImportFile(Path,
+            AssimpContext importer = new AssimpContext();
+            scene = importer.ImportFile(path,
                 PostProcessSteps.GenerateBoundingBoxes |
                 PostProcessSteps.GenerateUVCoords |
                 PostProcessSteps.Triangulate |
                 PostProcessSteps.JoinIdenticalVertices |
                 PostProcessSteps.SortByPrimitiveType);
 
-            float b_x = float.MinValue;
-            float b_y = float.MinValue;
-            float b_z = float.MinValue;
-
-            foreach (var mesh in scene.Meshes)
-            {
-                float x_size = mesh.BoundingBox.Max.X - mesh.BoundingBox.Min.X;
-                float y_size = mesh.BoundingBox.Max.Y - mesh.BoundingBox.Min.Y;
-                float z_size = mesh.BoundingBox.Max.Z - mesh.BoundingBox.Min.Z;
-
-                if (x_size > b_x) b_x = x_size;
-                if (y_size > b_y) b_y = y_size;
-                if (z_size > b_z) b_z = z_size;
-            }
-
-            b_x *= scale.X;
-            b_y *= scale.Y;
-            b_z *= scale.Z;
-
-            if (boundingBoxType == BoundingBoxType.Box)
-            {
-                Box boxShape = new Box(b_x, b_y, b_z);
-                boxShape.ComputeInertia(1, out BodyInertia boxInertia);
-                TypedIndex boxIndex = simulation.Shapes.Add(boxShape);
-                bodyHandle = simulation.Bodies.Add(BodyDescription.CreateDynamic(new System.Numerics.Vector3(initializePosition.X, initializePosition.Y, initializePosition.Z), boxInertia, new CollidableDescription(boxIndex, 0.1f), new BodyActivityDescription(0.01f)));
-            }
-            else
-            {
-                Sphere sphereShape = new Sphere(((b_x + b_y + b_z) / 3) / 2);
-                sphereShape.ComputeInertia(1, out BodyInertia sphereInertia);
-                TypedIndex sphereIndex = simulation.Shapes.Add(sphereShape);
-                bodyHandle = simulation.Bodies.Add(BodyDescription.CreateDynamic(new System.Numerics.Vector3(initializePosition.X, initializePosition.Y, initializePosition.Z), sphereInertia, new CollidableDescription(sphereIndex, 0.1f), new BodyActivityDescription(0.01f)));
-            }
-
-            position = initializePosition;
             vertexLength = 8;
 
             InitializeVertices();
@@ -133,12 +83,12 @@ namespace MutaBrains.Core.Objects
         {
             List<float> vertList = new List<float>();
 
-            foreach (Assimp.Mesh mesh in scene.Meshes)
+            foreach (Mesh mesh in scene.Meshes)
             {
                 Material material = scene.Materials[mesh.MaterialIndex];
                 int diff_texture_index = material.TextureDiffuse.TextureIndex;
                 List<Vector3D> textures = mesh.TextureCoordinateChannels[diff_texture_index];
-                texture = Texture.LoadTexture(System.IO.Path.Combine(System.IO.Path.GetDirectoryName(Path), material.TextureDiffuse.FilePath));
+                texture = Texture.LoadTexture(System.IO.Path.Combine(System.IO.Path.GetDirectoryName(path), material.TextureDiffuse.FilePath));
 
                 foreach (Face face in mesh.Faces)
                 {
@@ -157,6 +107,7 @@ namespace MutaBrains.Core.Objects
                     Vector3D texture_1 = new Vector3D(0);
                     Vector3D texture_2 = new Vector3D(0);
                     Vector3D texture_3 = new Vector3D(0);
+
                     if (mesh.HasTextureCoords(diff_texture_index))
                     {
                         texture_1 = textures[vert_index_1];
@@ -188,7 +139,7 @@ namespace MutaBrains.Core.Objects
 
         protected virtual void RefreshMatrices()
         {
-            rotationMatrix = Matrix4.CreateFromQuaternion(quaternion);
+            rotationMatrix = Matrix4.Identity;
             scaleMatrix = Matrix4.CreateScale(scale);
             translationMatrix = Matrix4.CreateTranslation(position);
 
@@ -197,16 +148,12 @@ namespace MutaBrains.Core.Objects
 
         public virtual void Update(double time, MouseState mouseState = null, KeyboardState keyboardState = null)
         {
-            BodyReference bodyReference = simulation.Bodies.GetBodyReference(bodyHandle);
-            position = new Vector3(bodyReference.Pose.Position.X, bodyReference.Pose.Position.Y, bodyReference.Pose.Position.Z);
-            quaternion = new OpenTK.Mathematics.Quaternion(bodyReference.Pose.Orientation.X, bodyReference.Pose.Orientation.Y, bodyReference.Pose.Orientation.Z, bodyReference.Pose.Orientation.W);
-
             RefreshMatrices();
         }
 
         public virtual void Draw(double time)
         {
-            if (Visible)
+            if (visible)
             {
                 GL.Enable(EnableCap.DepthTest);
                 GL.FrontFace(FrontFaceDirection.Ccw);
