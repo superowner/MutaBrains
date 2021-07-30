@@ -10,13 +10,13 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <PackageReference Include="AssimpNet" Version="5.0.0-beta1" />
-    <PackageReference Include="Microsoft.ML" Version="1.5.5" />
-    <PackageReference Include="Microsoft.ML.FastTree" Version="1.5.5" />
-    <PackageReference Include="Microsoft.ML.ImageAnalytics" Version="1.5.5" />
-    <PackageReference Include="Microsoft.ML.LightGBM" Version="1.5.5" />
-    <PackageReference Include="Microsoft.ML.OnnxTransformer" Version="1.5.5" />
-    <PackageReference Include="Microsoft.ML.TensorFlow" Version="1.5.5" />
-    <PackageReference Include="OpenTK" Version="4.6.3" />
+    <PackageReference Include="Microsoft.ML" Version="1.6.0" />
+    <PackageReference Include="Microsoft.ML.FastTree" Version="1.6.0" />
+    <PackageReference Include="Microsoft.ML.ImageAnalytics" Version="1.6.0" />
+    <PackageReference Include="Microsoft.ML.LightGBM" Version="1.6.0" />
+    <PackageReference Include="Microsoft.ML.OnnxTransformer" Version="1.6.0" />
+    <PackageReference Include="Microsoft.ML.TensorFlow" Version="1.6.0" />
+    <PackageReference Include="OpenTK" Version="4.6.4" />
     <PackageReference Include="SixLabors.Fonts" Version="1.0.0-beta0013" />
     <PackageReference Include="SixLabors.ImageSharp" Version="1.0.3" />
     <PackageReference Include="SixLabors.ImageSharp.Drawing" Version="1.0.0-beta11" />
