@@ -20,8 +20,6 @@ namespace MutaBrains.Core.Objects
 
         public PhysicalObject3D(string name, string path, Vector3 position, Vector3 scale) : base(name, path, position, scale)
         {
-            Initialize(name, path, position, scale);
-
             Box shape = new Box(objectSize.X, objectSize.Y, objectSize.Z);
             shape.ComputeInertia(1, out BodyInertia inertia);
             TypedIndex index = PhysicsManager.simulation.Shapes.Add(shape);
@@ -46,7 +44,15 @@ namespace MutaBrains.Core.Objects
                 Material material = scene.Materials[mesh.MaterialIndex];
                 int diff_texture_index = material.TextureDiffuse.TextureIndex;
                 List<Vector3D> textures = mesh.TextureCoordinateChannels[diff_texture_index];
-                texture = Texture.LoadTexture(System.IO.Path.Combine(System.IO.Path.GetDirectoryName(path), material.TextureDiffuse.FilePath));
+
+                if (material.HasTextureDiffuse)
+                {
+                    diffuseTexture = Texture.LoadTexture(System.IO.Path.Combine(System.IO.Path.GetDirectoryName(path), material.TextureDiffuse.FilePath));
+                }
+                if (material.HasTextureSpecular)
+                {
+                    specularTexture = Texture.LoadTexture(System.IO.Path.Combine(System.IO.Path.GetDirectoryName(path), material.TextureSpecular.FilePath));
+                }
 
                 foreach (Face face in mesh.Faces)
                 {

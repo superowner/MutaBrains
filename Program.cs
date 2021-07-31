@@ -13,7 +13,7 @@ namespace MutaBrains
 
             NativeWindowSettings nwSettings = new NativeWindowSettings {
                 Size = new OpenTK.Mathematics.Vector2i(1280, 720),
-                WindowState = OpenTK.Windowing.Common.WindowState.Fullscreen,
+                WindowState = OpenTK.Windowing.Common.WindowState.Normal,
                 NumberOfSamples = 4,
                 Title = "MutaBrains",
                 WindowBorder = OpenTK.Windowing.Common.WindowBorder.Fixed,

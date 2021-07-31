@@ -14,7 +14,7 @@ namespace MutaBrains.States
     {
         Background background;
         Pointer pointer;
-        AnimatedObject animated;
+        AnimatedObject3D animated;
 
         public AnimationTestState(string name, MBWindow window) : base(name, window) { }
 
@@ -25,7 +25,7 @@ namespace MutaBrains.States
             background = new Background(Path.Combine(Navigator.TexturesDir, "gui", "gui_background.png"), window.ClientSize);
             pointer = new Pointer(window.MousePosition);
 
-            animated = new AnimatedObject("animated", Path.Combine(Navigator.MeshesDir, "animated", "animated.dae"), Vector3.Zero);
+            animated = new AnimatedObject3D("animated", Path.Combine(Navigator.MeshesDir, "animated", "animated.dae"), Vector3.Zero, new Vector3(0.02f));
 
             CameraManager.Perspective.Position = new Vector3(0, 1.7f, 6);
 

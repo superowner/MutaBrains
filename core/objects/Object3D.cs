@@ -23,7 +23,8 @@ namespace MutaBrains.Core.Objects
         protected Matrix4 translationMatrix;
         protected Matrix4 modelMatrix;
 
-        protected Texture texture;
+        protected Texture diffuseTexture = null;
+        protected Texture specularTexture = null;
         protected Scene scene;
 
         public string name;
@@ -88,7 +89,15 @@ namespace MutaBrains.Core.Objects
                 Material material = scene.Materials[mesh.MaterialIndex];
                 int diff_texture_index = material.TextureDiffuse.TextureIndex;
                 List<Vector3D> textures = mesh.TextureCoordinateChannels[diff_texture_index];
-                texture = Texture.LoadTexture(System.IO.Path.Combine(System.IO.Path.GetDirectoryName(path), material.TextureDiffuse.FilePath));
+
+                if (material.HasTextureDiffuse)
+                {
+                    diffuseTexture = Texture.LoadTexture(System.IO.Path.Combine(System.IO.Path.GetDirectoryName(path), material.TextureDiffuse.FilePath));
+                }
+                if (material.HasTextureSpecular)
+                {
+                    specularTexture = Texture.LoadTexture(System.IO.Path.Combine(System.IO.Path.GetDirectoryName(path), material.TextureSpecular.FilePath));
+                }
 
                 foreach (Face face in mesh.Faces)
                 {
@@ -139,7 +148,7 @@ namespace MutaBrains.Core.Objects
 
         protected virtual void RefreshMatrices()
         {
-            rotationMatrix = Matrix4.Identity;
+            rotationMatrix = Matrix4.CreateRotationX(0);
             scaleMatrix = Matrix4.CreateScale(scale);
             translationMatrix = Matrix4.CreateTranslation(position);
 
@@ -159,7 +168,14 @@ namespace MutaBrains.Core.Objects
                 GL.FrontFace(FrontFaceDirection.Ccw);
 
                 GL.BindVertexArray(vertexArray);
-                texture.Use();
+                if (diffuseTexture != null)
+                {
+                    diffuseTexture.Use(TextureUnit.Texture0);
+                }
+                if (specularTexture != null)
+                {
+                    specularTexture.Use(TextureUnit.Texture1);
+                }
 
                 ShaderManager.simpleMeshShader.Use();
                 ShaderManager.simpleMeshShader.SetMatrix4("model", modelMatrix);
@@ -168,7 +184,7 @@ namespace MutaBrains.Core.Objects
                 ShaderManager.simpleMeshShader.SetVector3("viewPosition", CameraManager.Perspective.Position);
                 // Material
                 ShaderManager.simpleMeshShader.SetInt("material.diffuse", 0);
-                ShaderManager.simpleMeshShader.SetInt("material.specular", 0);
+                ShaderManager.simpleMeshShader.SetInt("material.specular", 1);
                 ShaderManager.simpleMeshShader.SetFloat("material.shininess", 2.0f);
                 // Directional light
                 ShaderManager.simpleMeshShader.SetVector3("dirLight.direction", new Vector3(-.1f));
