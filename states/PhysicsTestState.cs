@@ -49,6 +49,10 @@ namespace MutaBrains.States
                 Vector3 pos = new Vector3(rnd.Next(-4,4) * (float)rnd.NextDouble(), (float)rnd.NextDouble() * rnd.Next(2,20) + 10, rnd.Next(-4,4) * (float)rnd.NextDouble());
                 modelsList.Add(new PhysicalObject3D("brain", Path.Combine(Navigator.MeshesDir, "brain", "brain.obj"), pos, new Vector3(0.2f)));
             }
+            for (int i = 0; i < 5; i++) {
+                Vector3 pos = new Vector3(rnd.Next(-4,4) * (float)rnd.NextDouble(), (float)rnd.NextDouble() * rnd.Next(2,20) + 5, rnd.Next(-4,4) * (float)rnd.NextDouble());
+                modelsList.Add(new PhysicalObject3D("brain", Path.Combine(Navigator.MeshesDir, "animated", "animated.dae"), pos, new Vector3(0.01f)));
+            }
 
             base.OnLoad();
         }

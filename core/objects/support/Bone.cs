@@ -2,7 +2,7 @@
 using OpenTK.Mathematics;
 using Assimp;
 
-namespace MutaBrains.Core.Objects
+namespace MutaBrains.Core.Objects.Support
 {
     struct KeyPosition
     {

@@ -158,7 +158,7 @@ namespace MutaBrains.Core.Objects
                     // Directional light
                     ShaderManager.simpleMeshShader.SetVector3("dirLight.direction", new Vector3(-.1f));
                     ShaderManager.simpleMeshShader.SetVector3("dirLight.ambient", new Vector3(0.1f));
-                    ShaderManager.simpleMeshShader.SetVector3("dirLight.diffuse", new Vector3(5.0f));
+                    ShaderManager.simpleMeshShader.SetVector3("dirLight.diffuse", new Vector3(1.0f));
                     ShaderManager.simpleMeshShader.SetVector3("dirLight.specular", new Vector3(1.0f));
                     // Point light
                     //ShaderManager.simpleMeshShader.SetVector3("pointLight.position", lightPos);

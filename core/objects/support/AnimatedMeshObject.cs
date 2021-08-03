@@ -27,9 +27,21 @@ namespace MutaBrains.Core.Objects.Support
     {
         public Dictionary<string, BoneInfo> BoneInfoMap = new Dictionary<string, BoneInfo>();
         public int BoneCounter = 0;
+        public List<Matrix4> FinalBonesTransformations;
 
         public AnimatedMeshObject(Mesh mesh) : base(mesh)
         {
+            prefillBoneTransformations();
+        }
+
+        private void prefillBoneTransformations()
+        {
+            FinalBonesTransformations = new List<Matrix4>(100);
+
+            for (int i = 0; i < 100; i++)
+            {
+                FinalBonesTransformations.Add(Matrix4.Identity);
+            }
         }
 
         public override void ParseMesh(Material material, string path)
@@ -106,7 +118,7 @@ namespace MutaBrains.Core.Objects.Support
 
         private void ExtractBoneWeightForVertices(List<BonedNormalTextureVertex> vertices, Mesh mesh)
         {
-            for (int boneIndex = 0; boneIndex < mesh.BoneCount; ++boneIndex)
+            for (int boneIndex = 0; boneIndex < mesh.BoneCount; boneIndex++)
             {
                 int boneID;
                 string boneName = mesh.Bones[boneIndex].Name;

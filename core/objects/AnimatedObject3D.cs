@@ -10,7 +10,9 @@ namespace MutaBrains.Core.Objects
 {
     class AnimatedObject3D : Object3D
     {
-        public AnimatedObject3D(string name, string path, Vector3 position, Vector3 scale) : base(name, path, position, scale) {}
+        public AnimatedObject3D(string name, string path, Vector3 position, Vector3 scale) : base(name, path, position, scale)
+        {
+        }
 
         protected override void Initialize(string name, string path, Vector3 position, Vector3 scale)
         {
@@ -120,13 +122,13 @@ namespace MutaBrains.Core.Objects
                     // Directional light
                     ShaderManager.simpleAnimationShader.SetVector3("dirLight.direction", new Vector3(-.1f));
                     ShaderManager.simpleAnimationShader.SetVector3("dirLight.ambient", new Vector3(0.1f));
-                    ShaderManager.simpleAnimationShader.SetVector3("dirLight.diffuse", new Vector3(5.0f));
+                    ShaderManager.simpleAnimationShader.SetVector3("dirLight.diffuse", new Vector3(1.0f));
                     ShaderManager.simpleAnimationShader.SetVector3("dirLight.specular", new Vector3(1.0f));
 
-                    // for (int i = 0; i < animator.Transforms.Count; i++)
-                    // {
-                    //     ShaderManager.simpleAnimationShader.SetMatrix4Raw("finalBonesTransformations[" + i + "]", animator.Transforms[i]);
-                    // }
+                    for (int i = 0; i < mesh.FinalBonesTransformations.Count; i++)
+                    {
+                        ShaderManager.simpleAnimationShader.SetMatrix4Raw("finalBonesTransformations[" + i + "]", mesh.FinalBonesTransformations[i]);
+                    }
 
                     GL.DrawArrays(OpenTK.Graphics.OpenGL4.PrimitiveType.Triangles, 0, vertices.Length / vertexLength);
                 }

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using OpenTK.Mathematics;
 
-namespace MutaBrains.Core.Objects
+namespace MutaBrains.Core.Objects.Support
 {
     class Animator
     {
