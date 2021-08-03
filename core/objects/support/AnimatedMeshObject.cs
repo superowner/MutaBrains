@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using OpenTK.Mathematics;
 using Assimp;
@@ -5,32 +6,38 @@ using MutaBrains.Core.Textures;
 
 namespace MutaBrains.Core.Objects.Support
 {
-    struct BonedNormalTextureVertex
+    struct BoneInfo
+    {
+        public int ID;
+        public string Name;
+        public Matrix4 OffsetMatrix;
+    }
+
+    struct VertexInfo
     {
         public Vector3 Position;
         public Vector3 Normal;
         public Vector2 Texture;
-
-        public int[] BoneIDs;
-        public float[] BoneWeights;
-    }
-
-    struct BoneInfo
-    {
-        // id is index in finalBoneMatrices
-        public int id;
-        // offset matrix transforms vertex from model space to bone space
-        public Matrix4 offset;
+        public Vector4 BoneIDs;
+        public Vector4 BoneWeights;
     }
 
     class AnimatedMeshObject : MeshObject
     {
-        public Dictionary<string, BoneInfo> BoneInfoMap = new Dictionary<string, BoneInfo>();
-        public int BoneCounter = 0;
         public List<Matrix4> FinalBonesTransformations;
+        public List<VertexInfo> VertexInfos;
+        public List<BoneInfo> BoneInfos;
 
-        public AnimatedMeshObject(Mesh mesh) : base(mesh)
+        private List<Assimp.Animation> animations;
+        private double animationCurrentTime = 0;
+        private Assimp.Animation currentAnimation;
+
+        public AnimatedMeshObject(Mesh mesh, List<Assimp.Animation> animations) : base(mesh)
         {
+            this.animations = animations;
+
+            currentAnimation = animations[0];
+
             prefillBoneTransformations();
         }
 
@@ -59,6 +66,8 @@ namespace MutaBrains.Core.Objects.Support
             }
 
             List<float> meshVertexList = new List<float>();
+            VertexInfos = new List<VertexInfo>();
+            BoneInfos = new List<BoneInfo>();
 
             foreach (Face face in mesh.Faces)
             {
@@ -67,16 +76,16 @@ namespace MutaBrains.Core.Objects.Support
                     Vector3 position = GLConverter.FromVector3(mesh.Vertices[faceIndex]);
                     Vector3 normal = GLConverter.FromVector3(mesh.Normals[faceIndex]);
                     Vector2 texture = Vector2.Zero;
-
-                    Vector4 boneIDs = new Vector4(-1);
-                    Vector4 boneWeights = Vector4.Zero;
-
-                    fillBoneData(faceIndex, ref boneIDs, ref boneWeights);
-
                     if (mesh.HasTextureCoords(diff_texture_index))
                     {
                         texture = GLConverter.FromVector3(textures[faceIndex]).Xy;
                     }
+                    Vector4 boneIDs = Vector4.Zero;
+                    Vector4 boneWeights = Vector4.Zero;
+
+                    fillBoneData(faceIndex, ref boneIDs, ref boneWeights);
+
+                    VertexInfos.Add(new VertexInfo { Position = position, Normal = normal, Texture = texture, BoneIDs = boneIDs, BoneWeights = boneWeights });
 
                     float[] faceIndexArray = new float[] {
                         position.X, position.Y, position.Z,
@@ -95,72 +104,58 @@ namespace MutaBrains.Core.Objects.Support
 
         private void fillBoneData(int faceIndex, ref Vector4 boneIDs, ref Vector4 boneWeights)
         {
-            // mesh.Bones[0].Name
-            // mesh.Bones[0].VertexWeights[0].VertexID
-            // mesh.Bones[0].VertexWeights[0].Weight
-            // mesh.Bones[0].OffsetMatrix
-        }
+            boneIDs = new Vector4(-1);
+            boneWeights = new Vector4(0);
 
-        private void SetVertexBoneDataToDefault(ref BonedNormalTextureVertex vertex)
-        {
-            vertex.BoneIDs = new int[4];
-            vertex.BoneWeights = new float[4];
+            int idsCounter = 0;
 
-            for (int i = 0; i < 4; i++)
+            foreach (Assimp.Bone bone in mesh.Bones)
             {
-                vertex.BoneIDs[i] = -1;
-                vertex.BoneWeights[i] = 0.0f;
-            }
-        }
+                List<VertexWeight> boneVertWeights = bone.VertexWeights.FindAll(vw => vw.VertexID == faceIndex);
 
-        private void SetVertexBoneData(BonedNormalTextureVertex vertex, int boneID, float weight)
-        {
-            for (int i = 0; i < 4; i++)
-            {
-                if (vertex.BoneIDs[i] < 0)
+                for (int i = 0; i < boneVertWeights.Count; i++)
                 {
-                    vertex.BoneIDs[i] = boneID;
-                    vertex.BoneWeights[i] = weight;
-                    break;
-                }
-            }
-        }
-
-        private void ExtractBoneWeightForVertices(List<BonedNormalTextureVertex> vertices, Mesh mesh)
-        {
-            for (int boneIndex = 0; boneIndex < mesh.BoneCount; boneIndex++)
-            {
-                int boneID;
-                string boneName = mesh.Bones[boneIndex].Name;
-
-                if (BoneInfoMap.ContainsKey(boneName))
-                {
-                    boneID = BoneInfoMap[boneName].id;
-                }
-                else
-                {
-                    BoneInfo newBoneInfo = new BoneInfo()
+                    if (idsCounter < 4)
                     {
-                        id = BoneCounter,
-                        offset = GLConverter.FromMatrix(mesh.Bones[boneIndex].OffsetMatrix)
-                    };
-                    BoneInfoMap.Add(boneName, newBoneInfo);
-                    boneID = BoneCounter;
+                        BoneInfos.Add(new BoneInfo { ID = faceIndex, Name = bone.Name, OffsetMatrix = GLConverter.FromMatrix(bone.OffsetMatrix) });
 
-                    BoneCounter++;
-                }
+                        switch (idsCounter)
+                        {
+                            case 0:
+                                boneIDs.X = boneVertWeights[i].VertexID;
+                                boneWeights.X = boneVertWeights[i].Weight;
+                                break;
+                            case 1:
+                                boneIDs.Y = boneVertWeights[i].VertexID;
+                                boneWeights.Y = boneVertWeights[i].Weight;
+                                break;
+                            case 2:
+                                boneIDs.Z = boneVertWeights[i].VertexID;
+                                boneWeights.Z = boneVertWeights[i].Weight;
+                                break;
+                            case 3:
+                                boneIDs.W = boneVertWeights[i].VertexID;
+                                boneWeights.W = boneVertWeights[i].Weight;
+                                break;
+                        }
 
-                List<VertexWeight> weights = mesh.Bones[boneIndex].VertexWeights;
-                int numWeights = mesh.Bones[boneIndex].VertexWeightCount;
-
-                for (int weightIndex = 0; weightIndex < numWeights; ++weightIndex)
-                {
-                    int vertexID = weights[weightIndex].VertexID;
-                    float weight = weights[weightIndex].Weight;
-
-                    SetVertexBoneData(vertices[vertexID], boneID, weight);
+                        idsCounter++;
+                    }
+                    else
+                    {
+                        return;
+                    }
                 }
             }
+        }
+
+        public override void Update(double time)
+        {
+            animationCurrentTime += currentAnimation.TicksPerSecond * time;
+            animationCurrentTime = animationCurrentTime % currentAnimation.DurationInTicks;
+
+            Console.ForegroundColor = ConsoleColor.DarkGreen;
+            Console.WriteLine("Animation time: " + Math.Round(animationCurrentTime, 2));
         }
     }
 }

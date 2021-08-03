@@ -5,6 +5,7 @@ using OpenTK.Graphics.OpenGL4;
 using Assimp;
 using MutaBrains.Core.Managers;
 using MutaBrains.Core.Objects.Support;
+using OpenTK.Windowing.GraphicsLibraryFramework;
 
 namespace MutaBrains.Core.Objects
 {
@@ -74,7 +75,7 @@ namespace MutaBrains.Core.Objects
             {
                 Material material = scene.Materials[mesh.MaterialIndex];
 
-                AnimatedMeshObject meshObject = new AnimatedMeshObject(mesh);
+                AnimatedMeshObject meshObject = new AnimatedMeshObject(mesh, scene.Animations);
                 meshObject.ParseMesh(material, path);
 
                 List<float> verticesList = new List<float>();
@@ -86,6 +87,16 @@ namespace MutaBrains.Core.Objects
                 vertices = verticesList.ToArray();
 
                 animatedMeshes.Add(meshObject);
+            }
+        }
+
+        public override void Update(double time, MouseState mouseState = null, KeyboardState keyboardState = null)
+        {
+            base.Update(time, mouseState, keyboardState);
+
+            foreach (AnimatedMeshObject mesh in animatedMeshes)
+            {
+                mesh.Update(time);
             }
         }
 

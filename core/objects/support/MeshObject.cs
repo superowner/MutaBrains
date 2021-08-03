@@ -58,5 +58,10 @@ namespace MutaBrains.Core.Objects.Support
 
             vertices = meshVertexList.ToArray();
         }
+
+        public virtual void Update(double time)
+        {
+
+        }
     }
 }

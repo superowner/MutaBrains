@@ -16,6 +16,8 @@ namespace MutaBrains.Core.Managers
 
         public static void WindowResize(Vector2 newSize)
         {
+            if (Perspective == null || Orthographic == null) return;
+
             Perspective.WindowResize(newSize);
             Orthographic.WindowResize(newSize);
         }

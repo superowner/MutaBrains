@@ -12,11 +12,11 @@ namespace MutaBrains
             };
 
             NativeWindowSettings nwSettings = new NativeWindowSettings {
-                Size = new OpenTK.Mathematics.Vector2i(1280, 720),
+                Size = new OpenTK.Mathematics.Vector2i(1000, 600),
                 WindowState = OpenTK.Windowing.Common.WindowState.Normal,
                 NumberOfSamples = 4,
                 Title = "MutaBrains",
-                WindowBorder = OpenTK.Windowing.Common.WindowBorder.Fixed,
+                WindowBorder = OpenTK.Windowing.Common.WindowBorder.Resizable,
                 IsEventDriven = false,
             };
 

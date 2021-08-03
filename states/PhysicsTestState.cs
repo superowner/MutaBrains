@@ -80,14 +80,26 @@ namespace MutaBrains.States
 
             if (window.KeyboardState.IsKeyReleased(Keys.Space) || window.KeyboardState.IsKeyReleased(Keys.Enter))
             {
-                for (int i = 0; i < 10; i++)
+                for (int i = 0; i < 5; i++)
                 {
                     pos = new Vector3(rnd.Next(-4, 4) * (float)rnd.NextDouble(), (float)rnd.NextDouble() * rnd.Next(2, 20) + 8, rnd.Next(-4, 4) * (float)rnd.NextDouble());
                     modelsList.Add(new PhysicalObject3D("book", Path.Combine(Navigator.MeshesDir, "book", "book.obj"), pos, Vector3.One));
                 }
+
+                for (int i = 0; i < 2; i++)
+                {
+                    pos = new Vector3(rnd.Next(-4, 4) * (float)rnd.NextDouble(), (float)rnd.NextDouble() * rnd.Next(2, 20) + 8, rnd.Next(-4, 4) * (float)rnd.NextDouble());
+                    modelsList.Add(new PhysicalObject3D("book", Path.Combine(Navigator.MeshesDir, "animated", "animated.dae"), pos, new Vector3(0.01f)));
+                }
+
+                for (int i = 0; i < 3; i++)
+                {
+                    pos = new Vector3(rnd.Next(-4, 4) * (float)rnd.NextDouble(), (float)rnd.NextDouble() * rnd.Next(2, 20) + 8, rnd.Next(-4, 4) * (float)rnd.NextDouble());
+                    modelsList.Add(new PhysicalObject3D("book", Path.Combine(Navigator.MeshesDir, "brain", "brain.obj"), pos, new Vector3(0.2f)));
+                }
             }
 
-            if (rnd.NextDouble() > 0.99)
+            if (rnd.NextDouble() > 0.9)
             {
                 pos = new Vector3(rnd.Next(-4, 4) * (float)rnd.NextDouble(), (float)rnd.NextDouble() * rnd.Next(2, 20) + 8, rnd.Next(-4, 4) * (float)rnd.NextDouble());
                 modelsList.Add(new PhysicalObject3D("book", Path.Combine(Navigator.MeshesDir, "book", "book.obj"), pos, Vector3.One));
