@@ -71,6 +71,8 @@ namespace MutaBrains.Core.Objects.Support
                     Vector4 boneIDs = new Vector4(-1);
                     Vector4 boneWeights = Vector4.Zero;
 
+                    fillBoneData(faceIndex, ref boneIDs, ref boneWeights);
+
                     if (mesh.HasTextureCoords(diff_texture_index))
                     {
                         texture = GLConverter.FromVector3(textures[faceIndex]).Xy;
@@ -89,6 +91,14 @@ namespace MutaBrains.Core.Objects.Support
             }
 
             vertices = meshVertexList.ToArray();
+        }
+
+        private void fillBoneData(int faceIndex, ref Vector4 boneIDs, ref Vector4 boneWeights)
+        {
+            // mesh.Bones[0].Name
+            // mesh.Bones[0].VertexWeights[0].VertexID
+            // mesh.Bones[0].VertexWeights[0].Weight
+            // mesh.Bones[0].OffsetMatrix
         }
 
         private void SetVertexBoneDataToDefault(ref BonedNormalTextureVertex vertex)
