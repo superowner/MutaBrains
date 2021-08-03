@@ -15,6 +15,7 @@ namespace MutaBrains.States
         Background background;
         Pointer pointer;
         AnimatedObject3D animated;
+        Object3D notAnimated;
 
         public AnimationTestState(string name, MBWindow window) : base(name, window) { }
 
@@ -25,7 +26,8 @@ namespace MutaBrains.States
             background = new Background(Path.Combine(Navigator.TexturesDir, "gui", "gui_background.png"), window.ClientSize);
             pointer = new Pointer(window.MousePosition);
 
-            animated = new AnimatedObject3D("animated", Path.Combine(Navigator.MeshesDir, "animated", "animated.dae"), Vector3.Zero, new Vector3(0.02f));
+            notAnimated = new Object3D("nanimated", Path.Combine(Navigator.MeshesDir, "animated", "animated.dae"), new Vector3(-2, 0, 0), new Vector3(0.02f));
+            animated = new AnimatedObject3D("animated", Path.Combine(Navigator.MeshesDir, "animated", "animated.dae"), new Vector3(2, 0, 0), new Vector3(0.02f));
 
             CameraManager.Perspective.Position = new Vector3(0, 1.7f, 6);
 
@@ -50,6 +52,7 @@ namespace MutaBrains.States
                 window.SelectState("main_menu");
             }
 
+            notAnimated.Update(args.Time, window.MouseState, window.KeyboardState);
             animated.Update(args.Time, window.MouseState, window.KeyboardState);
 
             pointer.Update(args.Time, window.MousePosition);
@@ -61,6 +64,7 @@ namespace MutaBrains.States
 
             background.Draw(args.Time);
 
+            notAnimated.Draw(args.Time);
             animated.Draw(args.Time);
 
             pointer.Draw(args.Time);

@@ -25,7 +25,7 @@ namespace MutaBrains.Core.Objects
 
         protected Texture diffuseTexture = null;
         protected Texture specularTexture = null;
-        protected Scene scene;
+        public Scene scene;
 
         public string name;
         public bool visible = true;
@@ -53,7 +53,7 @@ namespace MutaBrains.Core.Objects
 
             vertexLength = 8;
 
-            InitializeVertices();
+            ProcessMeshes();
 
             vertexBuffer = GL.GenBuffer();
             GL.BindBuffer(BufferTarget.ArrayBuffer, vertexBuffer);
@@ -64,9 +64,9 @@ namespace MutaBrains.Core.Objects
 
             GL.BindBuffer(BufferTarget.ArrayBuffer, vertexBuffer);
 
-            int vertexLocation = ShaderManager.simpleMeshShader.GetAttribLocation("aPosition");
-            GL.VertexAttribPointer(vertexLocation, 3, VertexAttribPointerType.Float, false, vertexLength * sizeof(float), 0);
-            GL.EnableVertexAttribArray(vertexLocation);
+            int positionLocation = ShaderManager.simpleMeshShader.GetAttribLocation("aPosition");
+            GL.VertexAttribPointer(positionLocation, 3, VertexAttribPointerType.Float, false, vertexLength * sizeof(float), 0);
+            GL.EnableVertexAttribArray(positionLocation);
 
             int normalLocation = ShaderManager.simpleMeshShader.GetAttribLocation("aNormal");
             GL.VertexAttribPointer(normalLocation, 3, VertexAttribPointerType.Float, false, vertexLength * sizeof(float), 3 * sizeof(float));
@@ -80,7 +80,7 @@ namespace MutaBrains.Core.Objects
             GL.BindVertexArray(0);
         }
 
-        protected virtual void InitializeVertices()
+        protected virtual void ProcessMeshes()
         {
             List<float> vertList = new List<float>();
 
@@ -139,7 +139,7 @@ namespace MutaBrains.Core.Objects
 
         protected virtual void RefreshVertexBuffer()
         {
-            InitializeVertices();
+            ProcessMeshes();
 
             GL.BindBuffer(BufferTarget.ArrayBuffer, vertexBuffer);
             GL.BufferData(BufferTarget.ArrayBuffer, vertices.Length * sizeof(float), vertices, BufferUsageHint.StaticDraw);

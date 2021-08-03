@@ -33,7 +33,7 @@ namespace MutaBrains.Core.Objects
             );
         }
 
-        protected override void InitializeVertices()
+        protected override void ProcessMeshes()
         {
             List<float> vertList = new List<float>();
 

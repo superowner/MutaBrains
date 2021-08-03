@@ -89,10 +89,23 @@ namespace MutaBrains.Core.Shaders
             GL.UniformMatrix4(uniformLocations[name], true, ref data);
         }
 
+        public void SetMatrix4v2(string name, Matrix4 data)
+        {
+            GL.UseProgram(Handle);
+            int location = GL.GetUniformLocation(Handle, name);
+            GL.UniformMatrix4(location, false, ref data);
+        }
+
         public void SetVector3(string name, Vector3 data)
         {
             GL.UseProgram(Handle);
             GL.Uniform3(uniformLocations[name], data);
+        }
+
+        public void SetVector4(string name, Vector4 data)
+        {
+            GL.UseProgram(Handle);
+            GL.Uniform4(uniformLocations[name], data);
         }
 
         public void Use()
