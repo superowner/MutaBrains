@@ -54,7 +54,7 @@ namespace MutaBrains.Core.Objects
             for (int positionIndex = 0; positionIndex < numPositions; ++positionIndex)
             {
                 KeyPosition keyPositionData = new KeyPosition() {
-                    position = FromVector(channel.PositionKeys[positionIndex].Value),
+                    position = GLConverter.FromVector3(channel.PositionKeys[positionIndex].Value),
                     timeStamp = (float)channel.PositionKeys[positionIndex].Time
                 };
                 Positions.Add(keyPositionData);
@@ -65,7 +65,7 @@ namespace MutaBrains.Core.Objects
             {
                 KeyRotation keyRotationData = new KeyRotation()
                 {
-                    orientation = FromQuaternion(channel.RotationKeys[rotationIndex].Value),
+                    orientation = GLConverter.FromQuaternion(channel.RotationKeys[rotationIndex].Value),
                     timeStamp = (float)channel.RotationKeys[rotationIndex].Time
                 };
                 Rotations.Add(keyRotationData);
@@ -76,7 +76,7 @@ namespace MutaBrains.Core.Objects
             {
                 KeyScale keyScaleData = new KeyScale()
                 {
-                    scale = FromVector(channel.ScalingKeys[scaleIndex].Value),
+                    scale = GLConverter.FromVector3(channel.ScalingKeys[scaleIndex].Value),
                     timeStamp = (float)channel.ScalingKeys[scaleIndex].Time
                 };
                 Scales.Add(keyScaleData);
@@ -178,27 +178,6 @@ namespace MutaBrains.Core.Objects
             Matrix4 scale = InterpolateScaling(animationTime);
 
             localTransform = translation * rotation * scale;
-        }
-
-        private Vector3 FromVector(Vector3D vector)
-        {
-            return new Vector3
-            {
-                X = vector.X,
-                Y = vector.Y,
-                Z = vector.Z
-            };
-        }
-
-        private OpenTK.Mathematics.Quaternion FromQuaternion(Assimp.Quaternion quaternion)
-        {
-            return new OpenTK.Mathematics.Quaternion
-            {
-                X = quaternion.X,
-                Y = quaternion.Y,
-                Z = quaternion.Z,
-                W = quaternion.W
-            };
         }
     }
 }

@@ -1,14 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using OpenTK;
+﻿using System.Collections.Generic;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 using OpenTK.Mathematics;
 using Assimp;
 using BepuPhysics;
 using BepuPhysics.Collidables;
-using MutaBrains.Core.Textures;
 using MutaBrains.Core.Managers;
+using MutaBrains.Core.Objects.Support;
 
 namespace MutaBrains.Core.Objects
 {
@@ -35,58 +32,24 @@ namespace MutaBrains.Core.Objects
 
         protected override void ProcessMeshes()
         {
-            List<float> vertList = new List<float>();
-
+            meshes = new List<MeshObject>();
             objectSize = new Vector3(float.MinValue);
 
             foreach (Assimp.Mesh mesh in scene.Meshes)
             {
                 Material material = scene.Materials[mesh.MaterialIndex];
-                int diff_texture_index = material.TextureDiffuse.TextureIndex;
-                List<Vector3D> textures = mesh.TextureCoordinateChannels[diff_texture_index];
 
-                if (material.HasTextureDiffuse)
+                MeshObject meshObject = new MeshObject(mesh);
+                meshObject.ParseMesh(material, path);
+
+                List<float> verticesList = new List<float>();
+                if (vertices != null)
                 {
-                    diffuseTexture = Texture.LoadTexture(System.IO.Path.Combine(System.IO.Path.GetDirectoryName(path), material.TextureDiffuse.FilePath));
+                    verticesList.AddRange(vertices);
                 }
-                if (material.HasTextureSpecular)
-                {
-                    specularTexture = Texture.LoadTexture(System.IO.Path.Combine(System.IO.Path.GetDirectoryName(path), material.TextureSpecular.FilePath));
-                }
-
-                foreach (Face face in mesh.Faces)
-                {
-                    int vert_index_1 = face.Indices[0];
-                    int vert_index_2 = face.Indices[1];
-                    int vert_index_3 = face.Indices[2];
-
-                    Vector3D vertex_1 = mesh.Vertices[vert_index_1];
-                    Vector3D vertex_2 = mesh.Vertices[vert_index_2];
-                    Vector3D vertex_3 = mesh.Vertices[vert_index_3];
-
-                    Vector3D normal_1 = mesh.Normals[vert_index_1];
-                    Vector3D normal_2 = mesh.Normals[vert_index_2];
-                    Vector3D normal_3 = mesh.Normals[vert_index_3];
-
-                    Vector3D texture_1 = new Vector3D(0);
-                    Vector3D texture_2 = new Vector3D(0);
-                    Vector3D texture_3 = new Vector3D(0);
-
-                    if (mesh.HasTextureCoords(diff_texture_index))
-                    {
-                        texture_1 = textures[vert_index_1];
-                        texture_2 = textures[vert_index_2];
-                        texture_3 = textures[vert_index_3];
-                    }
-
-                    float[] array = new float[] {
-                        vertex_1.X, vertex_1.Y, vertex_1.Z, normal_1.X, normal_1.Y, normal_1.Z, texture_1.X, texture_1.Y,
-                        vertex_2.X, vertex_2.Y, vertex_2.Z, normal_2.X, normal_2.Y, normal_2.Z, texture_2.X, texture_2.Y,
-                        vertex_3.X, vertex_3.Y, vertex_3.Z, normal_3.X, normal_3.Y, normal_3.Z, texture_3.X, texture_3.Y
-                    };
-
-                    vertList.AddRange(array);
-                }
+                verticesList.AddRange(meshObject.vertices);
+                vertices = verticesList.ToArray();
+                meshes.Add(meshObject);
 
                 float x_size = mesh.BoundingBox.Max.X - mesh.BoundingBox.Min.X;
                 float y_size = mesh.BoundingBox.Max.Y - mesh.BoundingBox.Min.Y;
@@ -96,8 +59,6 @@ namespace MutaBrains.Core.Objects
                 if (y_size > objectSize.Y) objectSize.Y = y_size;
                 if (z_size > objectSize.Z) objectSize.Z = z_size;
             }
-
-            vertices = vertList.ToArray();
 
             objectSize.X *= scale.X;
             objectSize.Y *= scale.Y;

@@ -36,7 +36,7 @@ namespace MutaBrains.Core.Objects
         private void ReadHeirarchyData(ref AssimpNodeData dest, Node src)
         {
             dest.name = src.Name;
-            dest.transformation = FromMatrix(src.Transform);
+            dest.transformation = GLConverter.FromMatrix(src.Transform);
             dest.childrenCount = src.ChildCount;
 
             if (dest.children == null)
@@ -57,44 +57,21 @@ namespace MutaBrains.Core.Objects
             Bones = new List<Bone>();
             int size = animation.NodeAnimationChannelCount;
 
-            for (int i = 0; i < size; i++)
-            {
-                NodeAnimationChannel channel = animation.NodeAnimationChannels[i];
-                string boneName = channel.NodeName;
+            // for (int i = 0; i < size; i++)
+            // {
+            //     NodeAnimationChannel channel = animation.NodeAnimationChannels[i];
+            //     string boneName = channel.NodeName;
 
-                if (!model.BoneInfoMap.ContainsKey(boneName))
-                {
-                    BoneInfo boneInfo = new BoneInfo() { id = model.BoneCounter };
+            //     if (!model.BoneInfoMap.ContainsKey(boneName))
+            //     {
+            //         BoneInfo boneInfo = new BoneInfo() { id = model.BoneCounter };
 
-                    model.BoneInfoMap.Add(boneName, boneInfo);
-                    model.BoneCounter++;
-                }
+            //         model.BoneInfoMap.Add(boneName, boneInfo);
+            //         model.BoneCounter++;
+            //     }
 
-                Bones.Add(new Bone(channel.NodeName, model.BoneInfoMap[channel.NodeName].id, channel));
-            }
-        }
-
-        private Matrix4 FromMatrix(Matrix4x4 mat)
-        {
-            Matrix4 m = new Matrix4();
-            m.M11 = mat.A1;
-            m.M12 = mat.A2;
-            m.M13 = mat.A3;
-            m.M14 = mat.A4;
-            m.M21 = mat.B1;
-            m.M22 = mat.B2;
-            m.M23 = mat.B3;
-            m.M24 = mat.B4;
-            m.M31 = mat.C1;
-            m.M32 = mat.C2;
-            m.M33 = mat.C3;
-            m.M34 = mat.C4;
-            m.M41 = mat.D1;
-            m.M42 = mat.D2;
-            m.M43 = mat.D3;
-            m.M44 = mat.D4;
-
-            return m;
+            //     Bones.Add(new Bone(channel.NodeName, model.BoneInfoMap[channel.NodeName].id, channel));
+            // }
         }
     }
 }
