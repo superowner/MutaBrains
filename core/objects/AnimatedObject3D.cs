@@ -75,7 +75,7 @@ namespace MutaBrains.Core.Objects
             {
                 Material material = scene.Materials[mesh.MaterialIndex];
 
-                AnimatedMeshObject meshObject = new AnimatedMeshObject(mesh, scene.Animations);
+                AnimatedMeshObject meshObject = new AnimatedMeshObject(mesh, scene.Animations, scene.RootNode);
                 meshObject.ParseMesh(material, path);
 
                 List<float> verticesList = new List<float>();

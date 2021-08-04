@@ -8,7 +8,7 @@ namespace MutaBrains.Core.Objects.Support
 {
     struct BoneInfo
     {
-        public int ID;
+        public int ID; // индекс вершины в VertexInfos
         public string Name;
         public Matrix4 OffsetMatrix;
     }
@@ -22,6 +22,14 @@ namespace MutaBrains.Core.Objects.Support
         public Vector4 BoneWeights;
     }
 
+    struct NodeData
+    {
+        public Matrix4 Transformation;
+        public string Name;
+        public int ChildrensCount;
+        public List<NodeData> Childrens;
+    }
+
     class AnimatedMeshObject : MeshObject
     {
         public List<Matrix4> FinalBonesTransformations;
@@ -29,16 +37,20 @@ namespace MutaBrains.Core.Objects.Support
         public List<BoneInfo> BoneInfos;
 
         private List<Assimp.Animation> animations;
+        private Node rootNode;
         private double animationCurrentTime = 0;
         private Assimp.Animation currentAnimation;
+        private NodeData rootNodeData = new NodeData();
 
-        public AnimatedMeshObject(Mesh mesh, List<Assimp.Animation> animations) : base(mesh)
+        public AnimatedMeshObject(Mesh mesh, List<Assimp.Animation> animations, Node rootNode) : base(mesh)
         {
             this.animations = animations;
+            this.rootNode = rootNode;
 
-            currentAnimation = animations[0];
+            currentAnimation = this.animations[0];
 
             prefillBoneTransformations();
+            ReadNodesHierarchy(ref rootNodeData, rootNode);
         }
 
         private void prefillBoneTransformations()
@@ -154,8 +166,34 @@ namespace MutaBrains.Core.Objects.Support
             animationCurrentTime += currentAnimation.TicksPerSecond * time;
             animationCurrentTime = animationCurrentTime % currentAnimation.DurationInTicks;
 
+            CalculateBoneTransform(rootNodeData, Matrix4.Identity);
+
             Console.ForegroundColor = ConsoleColor.DarkGreen;
             Console.WriteLine("Animation time: " + Math.Round(animationCurrentTime, 2));
+        }
+
+        private void ReadNodesHierarchy(ref NodeData rootNodeData, Node rootNode)
+        {
+            rootNodeData.Name = rootNode.Name;
+            rootNodeData.ChildrensCount = rootNode.ChildCount;
+            rootNodeData.Transformation = GLConverter.FromMatrix(rootNode.Transform);
+
+            if (rootNodeData.Childrens == null)
+            {
+                rootNodeData.Childrens = new List<NodeData>();
+            }
+
+            foreach (Node children in rootNode.Children)
+            {
+                NodeData newNodeData = new NodeData();
+                ReadNodesHierarchy(ref newNodeData, children);
+                rootNodeData.Childrens.Add(newNodeData);
+            }
+        }
+
+        private void CalculateBoneTransform(NodeData rootNodeData, Matrix4 matrix)
+        {
+
         }
     }
 }
