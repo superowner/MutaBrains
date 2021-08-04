@@ -8,7 +8,7 @@ namespace MutaBrains.Core.Objects.Support
 {
     struct BoneInfo
     {
-        public int ID; // индекс вершины в VertexInfos
+        public int ID; // index vershiny v VertexInfos
         public string Name;
         public Matrix4 OffsetMatrix;
     }
@@ -41,6 +41,7 @@ namespace MutaBrains.Core.Objects.Support
         private double animationCurrentTime = 0;
         private Assimp.Animation currentAnimation;
         private NodeData rootNodeData = new NodeData();
+        public List<Bone> Bones;
 
         public AnimatedMeshObject(Mesh mesh, List<Assimp.Animation> animations, Node rootNode) : base(mesh)
         {
@@ -51,6 +52,7 @@ namespace MutaBrains.Core.Objects.Support
 
             prefillBoneTransformations();
             ReadNodesHierarchy(ref rootNodeData, rootNode);
+            SetupBones(currentAnimation);
         }
 
         private void prefillBoneTransformations()
@@ -191,9 +193,44 @@ namespace MutaBrains.Core.Objects.Support
             }
         }
 
-        private void CalculateBoneTransform(NodeData rootNodeData, Matrix4 matrix)
+        private void SetupBones(Assimp.Animation animation)
         {
+            Bones = new List<Bone>();
+            foreach (NodeAnimationChannel channel in animation.NodeAnimationChannels)
+            {
+                Bones.Add(new Bone(channel.NodeName, channel));
+            }
+        }
 
+        private void CalculateBoneTransform(NodeData node, Matrix4 parentTransform)
+        {
+            Matrix4 nodeTransform = node.Transformation;
+
+            Bone Bone = Bones.Find(b => b.name == node.Name);
+            if (Bone != null)
+            {
+                Bone.Update(animationCurrentTime);
+                nodeTransform = Bone.localTransform;
+            }
+
+            Matrix4 globalTransformation = nodeTransform;
+
+            for (int i = 0; i < 100; i++)
+            {
+                FinalBonesTransformations[i] = globalTransformation;
+            }
+
+            // if (currentAnimation.model.BoneInfoMap.ContainsKey(nodeName))
+            // {
+            //     int index = currentAnimation.model.BoneInfoMap[nodeName].id;
+            //     Matrix4 offset = currentAnimation.model.BoneInfoMap[nodeName].offset;
+            //     Transforms[index] = globalTransformation * offset;                    // TRANSFORMS
+            // }
+
+            foreach (NodeData child in node.Childrens)
+            {
+                CalculateBoneTransform(child, globalTransformation);
+            }
         }
     }
 }

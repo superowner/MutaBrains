@@ -7,19 +7,19 @@ namespace MutaBrains.Core.Objects.Support
     struct KeyPosition
     {
         public Vector3 position;
-        public float timeStamp;
+        public double timeStamp;
     }
 
     struct KeyRotation
     {
         public OpenTK.Mathematics.Quaternion orientation;
-        public float timeStamp;
+        public double timeStamp;
     }
 
     struct KeyScale
     {
         public Vector3 scale;
-        public float timeStamp;
+        public double timeStamp;
     }
 
     class Bone
@@ -35,13 +35,11 @@ namespace MutaBrains.Core.Objects.Support
         public List<KeyScale> Scales;
         
         public string name;
-        public int id;
         public NodeAnimationChannel channel;
 
-        public Bone(string name, int id, NodeAnimationChannel channel)
+        public Bone(string name, NodeAnimationChannel channel)
         {
             this.name = name;
-            this.id = id;
             this.channel = channel;
 
             localTransform = Matrix4.Identity;
@@ -83,7 +81,7 @@ namespace MutaBrains.Core.Objects.Support
             }
         }
 
-        public int GetPositionIndex(float animationTime)
+        public int GetPositionIndex(double animationTime)
         {
             for (int index = 0; index < numPositions - 1; ++index)
             {
@@ -94,7 +92,7 @@ namespace MutaBrains.Core.Objects.Support
             return 0;
         }
 
-        public int GetRotationIndex(float animationTime)
+        public int GetRotationIndex(double animationTime)
         {
             for (int index = 0; index < numRotations - 1; ++index)
             {
@@ -105,7 +103,7 @@ namespace MutaBrains.Core.Objects.Support
             return 0;
         }
 
-        public int GetScaleIndex(float animationTime)
+        public int GetScaleIndex(double animationTime)
         {
             for (int index = 0; index < numScalings - 1; ++index)
             {
@@ -116,16 +114,16 @@ namespace MutaBrains.Core.Objects.Support
             return 0;
         }
 
-        private float GetScaleFactor(float lastTimeStamp, float nextTimeStamp, float animationTime)
+        private double GetScaleFactor(double lastTimeStamp, double nextTimeStamp, double animationTime)
         {
-            float midWayLength = animationTime - lastTimeStamp;
-            float framesDiff = nextTimeStamp - lastTimeStamp;
-            float scaleFactor = midWayLength / framesDiff;
+            double midWayLength = animationTime - lastTimeStamp;
+            double framesDiff = nextTimeStamp - lastTimeStamp;
+            double scaleFactor = midWayLength / framesDiff;
             
             return scaleFactor;
         }
 
-        private Matrix4 InterpolatePosition(float animationTime)
+        private Matrix4 InterpolatePosition(double animationTime)
         {
             if (1 == numPositions)
             {
@@ -134,13 +132,13 @@ namespace MutaBrains.Core.Objects.Support
 
             int p0Index = GetPositionIndex(animationTime);
             int p1Index = p0Index + 1;
-            float scaleFactor = GetScaleFactor(Positions[p0Index].timeStamp, Positions[p1Index].timeStamp, animationTime);
-            Vector3 finalPosition = Vector3.Lerp(Positions[p0Index].position, Positions[p1Index].position, scaleFactor);
+            double scaleFactor = GetScaleFactor(Positions[p0Index].timeStamp, Positions[p1Index].timeStamp, animationTime);
+            Vector3 finalPosition = Vector3.Lerp(Positions[p0Index].position, Positions[p1Index].position, (float)scaleFactor);
 
             return Matrix4.CreateTranslation(finalPosition);
         }
 
-        private Matrix4 InterpolateRotation(float animationTime)
+        private Matrix4 InterpolateRotation(double animationTime)
         {
             if (1 == numRotations)
             {
@@ -149,14 +147,14 @@ namespace MutaBrains.Core.Objects.Support
 
             int p0Index = GetRotationIndex(animationTime);
             int p1Index = p0Index + 1;
-            float scaleFactor = GetScaleFactor(Rotations[p0Index].timeStamp, Rotations[p1Index].timeStamp, animationTime);
-            OpenTK.Mathematics.Quaternion finalRotation = OpenTK.Mathematics.Quaternion.Slerp(Rotations[p0Index].orientation, Rotations[p1Index].orientation, scaleFactor);
+            double scaleFactor = GetScaleFactor(Rotations[p0Index].timeStamp, Rotations[p1Index].timeStamp, animationTime);
+            OpenTK.Mathematics.Quaternion finalRotation = OpenTK.Mathematics.Quaternion.Slerp(Rotations[p0Index].orientation, Rotations[p1Index].orientation, (float)scaleFactor);
 
             return Matrix4.CreateFromQuaternion(finalRotation.Normalized());
 
         }
 
-        private Matrix4 InterpolateScaling(float animationTime)
+        private Matrix4 InterpolateScaling(double animationTime)
         {
             if (1 == numScalings)
             {
@@ -165,13 +163,13 @@ namespace MutaBrains.Core.Objects.Support
 
             int p0Index = GetScaleIndex(animationTime);
             int p1Index = p0Index + 1;
-            float scaleFactor = GetScaleFactor(Scales[p0Index].timeStamp, Scales[p1Index].timeStamp, animationTime);
-            Vector3 finalScale = Vector3.Lerp(Scales[p0Index].scale, Scales[p1Index].scale, scaleFactor);
+            double scaleFactor = GetScaleFactor(Scales[p0Index].timeStamp, Scales[p1Index].timeStamp, animationTime);
+            Vector3 finalScale = Vector3.Lerp(Scales[p0Index].scale, Scales[p1Index].scale, (float)scaleFactor);
 
             return Matrix4.CreateScale(finalScale);
         }
 
-        public void Update(float animationTime)
+        public void Update(double animationTime)
         {
             Matrix4 translation = InterpolatePosition(animationTime);
             Matrix4 rotation = InterpolateRotation(animationTime);

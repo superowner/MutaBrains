@@ -42,5 +42,5 @@ void main(void)
     Normal = aNormal * mat3(transpose(inverse(model)));
 	Texture = aTexture;
 
-    gl_Position = vec4(aPosition, 1.0) * model * view * projection;
+    gl_Position = totalPosition * model * view * projection;
 }
