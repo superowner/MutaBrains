@@ -26,7 +26,6 @@ namespace MutaBrains.Core.Objects
         protected Matrix4 modelMatrix;
 
         protected List<MeshObject> meshes;
-        protected List<AnimatedMeshObject> animatedMeshes;
 
         protected Vector3 objectSize;
 
