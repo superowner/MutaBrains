@@ -14,8 +14,7 @@ namespace MutaBrains.States
     {
         Background background;
         Pointer pointer;
-        AnimatedObject3D animated;
-        Object3D notAnimated;
+        AnimatedObject3D rumba;
 
         public AnimationTestState(string name, MBWindow window) : base(name, window) { }
 
@@ -26,14 +25,21 @@ namespace MutaBrains.States
             background = new Background(Path.Combine(Navigator.TexturesDir, "gui", "gui_background.png"), window.ClientSize);
             pointer = new Pointer(window.MousePosition);
 
-            notAnimated = new Object3D("nanimated", Path.Combine(Navigator.MeshesDir, "animated", "animated.dae"), new Vector3(-2, 0, 0), new Vector3(0.02f));
-            animated = new AnimatedObject3D("animated", Path.Combine(Navigator.MeshesDir, "animated", "animated.dae"), new Vector3(2, 0, 0), new Vector3(0.02f));
+            rumba = new AnimatedObject3D("animated", Path.Combine(Navigator.MeshesDir, "rumba", "rumba.dae"), new Vector3(0, 0, 0), new Vector3(0.02f));
 
-            CameraManager.Perspective.Position = new Vector3(0, 1.7f, 6);
+            CameraManager.Perspective.Position = new Vector3(0, 1.75f, 8);
+
+            window.MouseWheel += Window_MouseWheel;
 
             base.OnLoad();
         }
 
+        private void Window_MouseWheel(MouseWheelEventArgs obj)
+        {
+            Vector3 camPos = CameraManager.Perspective.Position;
+            camPos.Z -= obj.OffsetY / 4;
+            CameraManager.Perspective.Position = camPos;
+        }
         public override void OnResize(ResizeEventArgs e)
         {
             base.OnResize(e);
@@ -52,8 +58,7 @@ namespace MutaBrains.States
                 window.SelectState("main_menu");
             }
 
-            notAnimated.Update(args.Time, window.MouseState, window.KeyboardState);
-            animated.Update(args.Time, window.MouseState, window.KeyboardState);
+            rumba.Update(args.Time, window.MouseState, window.KeyboardState);
 
             pointer.Update(args.Time, window.MousePosition);
         }
@@ -64,8 +69,7 @@ namespace MutaBrains.States
 
             background.Draw(args.Time);
 
-            notAnimated.Draw(args.Time);
-            animated.Draw(args.Time);
+            rumba.Draw(args.Time);
 
             pointer.Draw(args.Time);
         }

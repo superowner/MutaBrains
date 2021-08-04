@@ -18,7 +18,7 @@ namespace MutaBrains.Core.Objects.Support
             this.mesh = mesh;
         }
 
-        public virtual void ParseMesh(Material material, string path)
+        public virtual void ParseMesh(Material material, string path, int offset)
         {
             int diff_texture_index = material.TextureDiffuse.TextureIndex;
             List<Vector3D> textures = mesh.TextureCoordinateChannels[diff_texture_index];
@@ -59,7 +59,7 @@ namespace MutaBrains.Core.Objects.Support
             {
                 for (int i = 0; i < face.IndexCount; i++)
                 {
-                    indicesList.Add((uint)face.Indices[i]);
+                    indicesList.Add((uint)(face.Indices[i] + offset));
                 }
             }
 

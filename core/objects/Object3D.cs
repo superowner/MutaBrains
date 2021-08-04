@@ -64,7 +64,6 @@ namespace MutaBrains.Core.Objects
 
             vertexArray = GL.GenVertexArray();
             GL.BindVertexArray(vertexArray);
-
             GL.BindBuffer(BufferTarget.ArrayBuffer, vertexBuffer);
 
             indexBuffer = GL.GenBuffer();
@@ -93,10 +92,12 @@ namespace MutaBrains.Core.Objects
 
             foreach (Mesh mesh in scene.Meshes)
             {
+                int parseOffset = (vertices != null) ? (vertices.Length / vertexLength) : 0;
+
                 Material material = scene.Materials[mesh.MaterialIndex];
 
                 MeshObject meshObject = new MeshObject(mesh);
-                meshObject.ParseMesh(material, path);
+                meshObject.ParseMesh(material, path, parseOffset);
 
                 List<float> verticesList = new List<float>();
                 if (vertices != null)

@@ -1,4 +1,4 @@
-#version 330 core
+#version 430 core
 
 in vec3 aPosition;
 in vec3 aNormal;
@@ -14,33 +14,29 @@ uniform mat4 view;
 uniform mat4 projection;
 uniform mat4 finalBonesMatrices[100];
 
-out vec3 Position;
-out vec3 Normal;
 out vec2 Texture;
 
 void main(void)
 {
     vec4 totalPosition = vec4(0.0);
-    vec3 totalNormal = vec3(0.0);
     for(int i = 0 ; i < MAX_BONE_INFLUENCE ; i++)
     {
-        if(aBoneIDs[i] == -1) 
+        highp int boneId = int(aBoneIDs[i]);
+
+        if(boneId < 0)
+        {
             continue;
-        if(aBoneIDs[i] >= MAX_BONES) 
+        }
+        if(boneId >= MAX_BONES) 
         {
             totalPosition = vec4(aPosition,1.0);
             break;
         }
-        vec4 localPosition = finalBonesMatrices[int(aBoneIDs[i])] * vec4(aPosition,1.0);
+        vec4 localPosition = finalBonesMatrices[boneId] * vec4(aPosition, 1.0);
         totalPosition += localPosition * aBoneWeights[i];
-
-        vec3 localNormal = mat3(finalBonesMatrices[int(aBoneIDs[i])]) * aNormal;
-        totalNormal += localNormal;
    }
-	
-    Position = vec3(vec4(aPosition, 1.0) * model);
-    Normal = aNormal * mat3(transpose(inverse(model)));
-	Texture = aTexture;
 
-    gl_Position = totalPosition * model * view * projection;
+   gl_Position = totalPosition * model * view * projection;
+   //gl_Position =  projection * (view * model) * totalPosition;
+   //gl_Position = vec4(aPosition, 1.0) * model * view * projection;
 }

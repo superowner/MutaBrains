@@ -41,17 +41,10 @@ namespace MutaBrains.States
 
             modelsList = new List<PhysicalObject3D>();
             Random rnd = new Random();
-            for (int i = 0; i < 10; i++) {
-                Vector3 pos = new Vector3(rnd.Next(-4,4) * (float)rnd.NextDouble(), (float)rnd.NextDouble() * rnd.Next(2,20) + 8, rnd.Next(-4,4) * (float)rnd.NextDouble());
+            for (int i = 0; i < 10; i++)
+            {
+                Vector3 pos = new Vector3(rnd.Next(-4, 4) * (float)rnd.NextDouble(), (float)rnd.NextDouble() * rnd.Next(2, 20) + 8, rnd.Next(-2, 8) * (float)rnd.NextDouble());
                 modelsList.Add(new PhysicalObject3D("book", Path.Combine(Navigator.MeshesDir, "book", "book.obj"), pos, Vector3.One));
-            }
-            for (int i = 0; i < 10; i++) {
-                Vector3 pos = new Vector3(rnd.Next(-4,4) * (float)rnd.NextDouble(), (float)rnd.NextDouble() * rnd.Next(2,20) + 10, rnd.Next(-4,4) * (float)rnd.NextDouble());
-                modelsList.Add(new PhysicalObject3D("brain", Path.Combine(Navigator.MeshesDir, "brain", "brain.obj"), pos, new Vector3(0.2f)));
-            }
-            for (int i = 0; i < 5; i++) {
-                Vector3 pos = new Vector3(rnd.Next(-4,4) * (float)rnd.NextDouble(), (float)rnd.NextDouble() * rnd.Next(2,20) + 5, rnd.Next(-4,4) * (float)rnd.NextDouble());
-                modelsList.Add(new PhysicalObject3D("brain", Path.Combine(Navigator.MeshesDir, "animated", "animated.dae"), pos, new Vector3(0.01f)));
             }
 
             base.OnLoad();
@@ -60,7 +53,7 @@ namespace MutaBrains.States
         public override void OnResize(ResizeEventArgs e)
         {
             base.OnResize(e);
-            
+
             CameraManager.WindowResize(window.ClientSize.ToVector2());
             pointer.WindowResize(window.ClientSize.ToVector2());
             background.WindowResize(window.ClientSize.ToVector2());
@@ -82,26 +75,14 @@ namespace MutaBrains.States
             {
                 for (int i = 0; i < 5; i++)
                 {
-                    pos = new Vector3(rnd.Next(-4, 4) * (float)rnd.NextDouble(), (float)rnd.NextDouble() * rnd.Next(2, 20) + 8, rnd.Next(-4, 4) * (float)rnd.NextDouble());
+                    pos = new Vector3(rnd.Next(-4, 4) * (float)rnd.NextDouble(), (float)rnd.NextDouble() * rnd.Next(2, 20) + 8, rnd.Next(-2, 8) * (float)rnd.NextDouble());
                     modelsList.Add(new PhysicalObject3D("book", Path.Combine(Navigator.MeshesDir, "book", "book.obj"), pos, Vector3.One));
-                }
-
-                for (int i = 0; i < 2; i++)
-                {
-                    pos = new Vector3(rnd.Next(-4, 4) * (float)rnd.NextDouble(), (float)rnd.NextDouble() * rnd.Next(2, 20) + 8, rnd.Next(-4, 4) * (float)rnd.NextDouble());
-                    modelsList.Add(new PhysicalObject3D("book", Path.Combine(Navigator.MeshesDir, "animated", "animated.dae"), pos, new Vector3(0.01f)));
-                }
-
-                for (int i = 0; i < 3; i++)
-                {
-                    pos = new Vector3(rnd.Next(-4, 4) * (float)rnd.NextDouble(), (float)rnd.NextDouble() * rnd.Next(2, 20) + 8, rnd.Next(-4, 4) * (float)rnd.NextDouble());
-                    modelsList.Add(new PhysicalObject3D("book", Path.Combine(Navigator.MeshesDir, "brain", "brain.obj"), pos, new Vector3(0.2f)));
                 }
             }
 
             if (rnd.NextDouble() > 0.9)
             {
-                pos = new Vector3(rnd.Next(-4, 4) * (float)rnd.NextDouble(), (float)rnd.NextDouble() * rnd.Next(2, 20) + 8, rnd.Next(-4, 4) * (float)rnd.NextDouble());
+                pos = new Vector3(rnd.Next(-4, 4) * (float)rnd.NextDouble(), (float)rnd.NextDouble() * rnd.Next(2, 20) + 8, rnd.Next(-4, 8) * (float)rnd.NextDouble());
                 modelsList.Add(new PhysicalObject3D("book", Path.Combine(Navigator.MeshesDir, "book", "book.obj"), pos, Vector3.One));
             }
 

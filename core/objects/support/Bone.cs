@@ -24,68 +24,68 @@ namespace MutaBrains.Core.Objects.Support
 
     class Bone
     {
-        public int numPositions;
-        public int numRotations;
-        public int numScalings;
+        public int m_NumPositions;
+        public int m_NumRotations;
+        public int m_NumScalings;
 
-        public Matrix4 localTransform;
+        public Matrix4 m_LocalTransform;
 
-        public List<KeyPosition> Positions;
-        public List<KeyRotation> Rotations;
-        public List<KeyScale> Scales;
+        public List<KeyPosition> m_Positions;
+        public List<KeyRotation> m_Rotations;
+        public List<KeyScale> m_Scales;
         
-        public string name;
-        public NodeAnimationChannel channel;
+        public string m_Name;
+        public int m_ID;
 
-        public Bone(string name, NodeAnimationChannel channel)
+        public Bone(string name, int id, NodeAnimationChannel channel)
         {
-            this.name = name;
-            this.channel = channel;
+            m_Name = name;
+            m_ID = id;
 
-            localTransform = Matrix4.Identity;
+            m_LocalTransform = Matrix4.Identity;
 
-            Positions = new List<KeyPosition>();
-            Rotations = new List<KeyRotation>();
-            Scales = new List<KeyScale>();
+            m_Positions = new List<KeyPosition>();
+            m_Rotations = new List<KeyRotation>();
+            m_Scales = new List<KeyScale>();
 
-            numPositions = channel.PositionKeyCount;
-            for (int positionIndex = 0; positionIndex < numPositions; ++positionIndex)
+            m_NumPositions = channel.PositionKeyCount;
+            for (int positionIndex = 0; positionIndex < m_NumPositions; ++positionIndex)
             {
                 KeyPosition keyPositionData = new KeyPosition() {
                     position = GLConverter.FromVector3(channel.PositionKeys[positionIndex].Value),
                     timeStamp = (float)channel.PositionKeys[positionIndex].Time
                 };
-                Positions.Add(keyPositionData);
+                m_Positions.Add(keyPositionData);
             }
 
-            numRotations = channel.RotationKeyCount;
-            for (int rotationIndex = 0; rotationIndex < numRotations; ++rotationIndex)
+            m_NumRotations = channel.RotationKeyCount;
+            for (int rotationIndex = 0; rotationIndex < m_NumRotations; ++rotationIndex)
             {
                 KeyRotation keyRotationData = new KeyRotation()
                 {
                     orientation = GLConverter.FromQuaternion(channel.RotationKeys[rotationIndex].Value),
                     timeStamp = (float)channel.RotationKeys[rotationIndex].Time
                 };
-                Rotations.Add(keyRotationData);
+                m_Rotations.Add(keyRotationData);
             }
 
-            numScalings = channel.ScalingKeyCount;
-            for (int scaleIndex = 0; scaleIndex < numScalings; ++scaleIndex)
+            m_NumScalings = channel.ScalingKeyCount;
+            for (int scaleIndex = 0; scaleIndex < m_NumScalings; ++scaleIndex)
             {
                 KeyScale keyScaleData = new KeyScale()
                 {
                     scale = GLConverter.FromVector3(channel.ScalingKeys[scaleIndex].Value),
                     timeStamp = (float)channel.ScalingKeys[scaleIndex].Time
                 };
-                Scales.Add(keyScaleData);
+                m_Scales.Add(keyScaleData);
             }
         }
 
         public int GetPositionIndex(double animationTime)
         {
-            for (int index = 0; index < numPositions - 1; ++index)
+            for (int index = 0; index < m_NumPositions - 1; ++index)
             {
-                if (animationTime < Positions[index + 1].timeStamp)
+                if (animationTime < m_Positions[index + 1].timeStamp)
                     return index;
             }
 
@@ -94,9 +94,9 @@ namespace MutaBrains.Core.Objects.Support
 
         public int GetRotationIndex(double animationTime)
         {
-            for (int index = 0; index < numRotations - 1; ++index)
+            for (int index = 0; index < m_NumRotations - 1; ++index)
             {
-                if (animationTime < Rotations[index + 1].timeStamp)
+                if (animationTime < m_Rotations[index + 1].timeStamp)
                     return index;
             }
 
@@ -105,9 +105,9 @@ namespace MutaBrains.Core.Objects.Support
 
         public int GetScaleIndex(double animationTime)
         {
-            for (int index = 0; index < numScalings - 1; ++index)
+            for (int index = 0; index < m_NumScalings - 1; ++index)
             {
-                if (animationTime < Scales[index + 1].timeStamp)
+                if (animationTime < m_Scales[index + 1].timeStamp)
                     return index;
             }
 
@@ -125,30 +125,30 @@ namespace MutaBrains.Core.Objects.Support
 
         private Matrix4 InterpolatePosition(double animationTime)
         {
-            if (1 == numPositions)
+            if (1 == m_NumPositions)
             {
-                return Matrix4.CreateTranslation(Positions[0].position);
+                return Matrix4.CreateTranslation(m_Positions[0].position);
             }
 
             int p0Index = GetPositionIndex(animationTime);
             int p1Index = p0Index + 1;
-            double scaleFactor = GetScaleFactor(Positions[p0Index].timeStamp, Positions[p1Index].timeStamp, animationTime);
-            Vector3 finalPosition = Vector3.Lerp(Positions[p0Index].position, Positions[p1Index].position, (float)scaleFactor);
+            double scaleFactor = GetScaleFactor(m_Positions[p0Index].timeStamp, m_Positions[p1Index].timeStamp, animationTime);
+            Vector3 finalPosition = Vector3.Lerp(m_Positions[p0Index].position, m_Positions[p1Index].position, (float)scaleFactor);
 
             return Matrix4.CreateTranslation(finalPosition);
         }
 
         private Matrix4 InterpolateRotation(double animationTime)
         {
-            if (1 == numRotations)
+            if (1 == m_NumRotations)
             {
-                return Matrix4.CreateFromQuaternion(Rotations[0].orientation.Normalized());
+                return Matrix4.CreateFromQuaternion(m_Rotations[0].orientation.Normalized());
             }
 
             int p0Index = GetRotationIndex(animationTime);
             int p1Index = p0Index + 1;
-            double scaleFactor = GetScaleFactor(Rotations[p0Index].timeStamp, Rotations[p1Index].timeStamp, animationTime);
-            OpenTK.Mathematics.Quaternion finalRotation = OpenTK.Mathematics.Quaternion.Slerp(Rotations[p0Index].orientation, Rotations[p1Index].orientation, (float)scaleFactor);
+            double scaleFactor = GetScaleFactor(m_Rotations[p0Index].timeStamp, m_Rotations[p1Index].timeStamp, animationTime);
+            OpenTK.Mathematics.Quaternion finalRotation = OpenTK.Mathematics.Quaternion.Slerp(m_Rotations[p0Index].orientation, m_Rotations[p1Index].orientation, (float)scaleFactor);
 
             return Matrix4.CreateFromQuaternion(finalRotation.Normalized());
 
@@ -156,15 +156,15 @@ namespace MutaBrains.Core.Objects.Support
 
         private Matrix4 InterpolateScaling(double animationTime)
         {
-            if (1 == numScalings)
+            if (1 == m_NumScalings)
             {
-                return Matrix4.CreateScale(Scales[0].scale);
+                return Matrix4.CreateScale(m_Scales[0].scale);
             }
 
             int p0Index = GetScaleIndex(animationTime);
             int p1Index = p0Index + 1;
-            double scaleFactor = GetScaleFactor(Scales[p0Index].timeStamp, Scales[p1Index].timeStamp, animationTime);
-            Vector3 finalScale = Vector3.Lerp(Scales[p0Index].scale, Scales[p1Index].scale, (float)scaleFactor);
+            double scaleFactor = GetScaleFactor(m_Scales[p0Index].timeStamp, m_Scales[p1Index].timeStamp, animationTime);
+            Vector3 finalScale = Vector3.Lerp(m_Scales[p0Index].scale, m_Scales[p1Index].scale, (float)scaleFactor);
 
             return Matrix4.CreateScale(finalScale);
         }
@@ -175,7 +175,7 @@ namespace MutaBrains.Core.Objects.Support
             Matrix4 rotation = InterpolateRotation(animationTime);
             Matrix4 scale = InterpolateScaling(animationTime);
 
-            localTransform = translation * rotation * scale;
+            m_LocalTransform = translation * rotation * scale;
         }
     }
 }
