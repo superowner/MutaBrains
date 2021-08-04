@@ -13,7 +13,6 @@ namespace MutaBrains.Core.Objects
     {
         protected BodyHandle physicalBodyHandle;
         protected OpenTK.Mathematics.Quaternion quaternion = OpenTK.Mathematics.Quaternion.Identity;
-        protected Vector3 objectSize;
 
         public PhysicalObject3D(string name, string path, Vector3 position, Vector3 scale) : base(name, path, position, scale)
         {
@@ -28,41 +27,6 @@ namespace MutaBrains.Core.Objects
                     new BodyActivityDescription(0.01f)
                 )
             );
-        }
-
-        protected override void ProcessMeshes()
-        {
-            meshes = new List<MeshObject>();
-            objectSize = new Vector3(float.MinValue);
-
-            foreach (Assimp.Mesh mesh in scene.Meshes)
-            {
-                Material material = scene.Materials[mesh.MaterialIndex];
-
-                MeshObject meshObject = new MeshObject(mesh);
-                meshObject.ParseMesh(material, path);
-
-                List<float> verticesList = new List<float>();
-                if (vertices != null)
-                {
-                    verticesList.AddRange(vertices);
-                }
-                verticesList.AddRange(meshObject.vertices);
-                vertices = verticesList.ToArray();
-                meshes.Add(meshObject);
-
-                float x_size = mesh.BoundingBox.Max.X - mesh.BoundingBox.Min.X;
-                float y_size = mesh.BoundingBox.Max.Y - mesh.BoundingBox.Min.Y;
-                float z_size = mesh.BoundingBox.Max.Z - mesh.BoundingBox.Min.Z;
-
-                if (x_size > objectSize.X) objectSize.X = x_size;
-                if (y_size > objectSize.Y) objectSize.Y = y_size;
-                if (z_size > objectSize.Z) objectSize.Z = z_size;
-            }
-
-            objectSize.X *= scale.X;
-            objectSize.Y *= scale.Y;
-            objectSize.Z *= scale.Z;
         }
 
         protected override void RefreshMatrices()

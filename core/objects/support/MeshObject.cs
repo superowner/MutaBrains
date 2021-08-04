@@ -8,6 +8,7 @@ namespace MutaBrains.Core.Objects.Support
     class MeshObject
     {
         public float[] vertices;
+        public uint[] indices;
         public Texture diffuseTexture = null;
         public Texture specularTexture = null;
         protected Mesh mesh;
@@ -33,30 +34,37 @@ namespace MutaBrains.Core.Objects.Support
 
             List<float> meshVertexList = new List<float>();
 
+            for (int i = 0; i < mesh.VertexCount; i++)
+            {
+                Vector3 position = GLConverter.FromVector3(mesh.Vertices[i]);
+                Vector3 normal = GLConverter.FromVector3(mesh.Normals[i]);
+                Vector2 texture = Vector2.Zero;
+                if (mesh.HasTextureCoords(diff_texture_index))
+                {
+                    texture = GLConverter.FromVector3(textures[i]).Xy;
+                }
+
+                float[] vertexInfoIndexedArray = new float[] {
+                    position.X, position.Y, position.Z,
+                    normal.X, normal.Y, normal.Z,
+                    texture.X, texture.Y
+                };
+
+                meshVertexList.AddRange(vertexInfoIndexedArray);
+            }
+
+            List<uint> indicesList = new List<uint>();
+
             foreach (Face face in mesh.Faces)
             {
-                foreach (int faceIndex in face.Indices)
+                for (int i = 0; i < face.IndexCount; i++)
                 {
-                    Vector3 position = GLConverter.FromVector3(mesh.Vertices[faceIndex]);
-                    Vector3 normal = GLConverter.FromVector3(mesh.Normals[faceIndex]);
-                    Vector2 texture = Vector2.Zero;
-                    
-                    if (mesh.HasTextureCoords(diff_texture_index))
-                    {
-                        texture = GLConverter.FromVector3(textures[faceIndex]).Xy;
-                    }
-
-                    float[] faceIndexArray = new float[] {
-                        position.X, position.Y, position.Z,
-                        normal.X, normal.Y, normal.Z,
-                        texture.X, texture.Y
-                    };
-
-                    meshVertexList.AddRange(faceIndexArray);
+                    indicesList.Add((uint)face.Indices[i]);
                 }
             }
 
             vertices = meshVertexList.ToArray();
+            indices = indicesList.ToArray();
         }
 
         public virtual void Update(double time)

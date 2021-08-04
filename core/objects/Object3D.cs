@@ -11,6 +11,9 @@ namespace MutaBrains.Core.Objects
     class Object3D
     {
         protected float[] vertices;
+        protected uint[] indices;
+
+        protected int indexBuffer;
         protected int vertexBuffer;
         protected int vertexArray;
         protected int vertexLength;
@@ -24,6 +27,8 @@ namespace MutaBrains.Core.Objects
 
         protected List<MeshObject> meshes;
         protected List<AnimatedMeshObject> animatedMeshes;
+
+        protected Vector3 objectSize;
 
         public Scene scene;
         public string name;
@@ -63,6 +68,10 @@ namespace MutaBrains.Core.Objects
 
             GL.BindBuffer(BufferTarget.ArrayBuffer, vertexBuffer);
 
+            indexBuffer = GL.GenBuffer();
+            GL.BindBuffer(BufferTarget.ElementArrayBuffer, indexBuffer);
+            GL.BufferData(BufferTarget.ElementArrayBuffer, sizeof(uint) * indices.Length, indices, BufferUsageHint.StaticDraw);
+
             int positionLocation = ShaderManager.simpleMeshShader.GetAttribLocation("aPosition");
             GL.VertexAttribPointer(positionLocation, 3, VertexAttribPointerType.Float, false, vertexLength * sizeof(float), 0);
             GL.EnableVertexAttribArray(positionLocation);
@@ -99,8 +108,29 @@ namespace MutaBrains.Core.Objects
 
                 vertices = verticesList.ToArray();
 
+                List<uint> indicesList = new List<uint>();
+                if (indices != null)
+                {
+                    indicesList.AddRange(indices);
+                }
+                indicesList.AddRange(meshObject.indices);
+
+                indices = indicesList.ToArray();
+
                 meshes.Add(meshObject);
+
+                float x_size = mesh.BoundingBox.Max.X - mesh.BoundingBox.Min.X;
+                float y_size = mesh.BoundingBox.Max.Y - mesh.BoundingBox.Min.Y;
+                float z_size = mesh.BoundingBox.Max.Z - mesh.BoundingBox.Min.Z;
+
+                if (x_size > objectSize.X) objectSize.X = x_size;
+                if (y_size > objectSize.Y) objectSize.Y = y_size;
+                if (z_size > objectSize.Z) objectSize.Z = z_size;
             }
+
+            objectSize.X *= scale.X;
+            objectSize.Y *= scale.Y;
+            objectSize.Z *= scale.Z;
         }
 
         protected virtual void RefreshVertexBuffer()
@@ -183,7 +213,8 @@ namespace MutaBrains.Core.Objects
                     // ShaderManager.simpleMeshShader.SetFloat("spotLight.cutOff", LightManager.GetLight("spot").CutOff);
                     // ShaderManager.simpleMeshShader.SetFloat("spotLight.outerCutOff", LightManager.GetLight("spot").CutOffOuter);
 
-                    GL.DrawArrays(OpenTK.Graphics.OpenGL4.PrimitiveType.Triangles, 0, vertices.Length / vertexLength);
+                    //GL.DrawArrays(OpenTK.Graphics.OpenGL4.PrimitiveType.Triangles, 0, vertices.Length / vertexLength);
+                    GL.DrawElements(OpenTK.Graphics.OpenGL4.PrimitiveType.Triangles, indices.Length, DrawElementsType.UnsignedInt, 0);
                 }
 
                 GL.FrontFace(FrontFaceDirection.Cw);
