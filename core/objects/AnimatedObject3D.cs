@@ -13,6 +13,9 @@ namespace MutaBrains.Core.Objects
     {
         protected List<AnimatedMeshObject> animatedMeshes;
 
+        float x_angle = 0;
+        float y_angle = 0;
+
         public AnimatedObject3D(string name, string path, Vector3 position, Vector3 scale) : base(name, path, position, scale)
         {
         }
@@ -121,9 +124,34 @@ namespace MutaBrains.Core.Objects
             objectSize.Z *= scale.Z;
         }
 
+        protected override void RefreshMatrices()
+        {
+            rotationMatrix = Matrix4.CreateRotationX(x_angle) * Matrix4.CreateRotationY(y_angle);
+            scaleMatrix = Matrix4.CreateScale(scale);
+            translationMatrix = Matrix4.CreateTranslation(position);
+
+            modelMatrix = rotationMatrix * scaleMatrix * translationMatrix;
+        }
+
         public override void Update(double time, MouseState mouseState = null, KeyboardState keyboardState = null)
         {
             base.Update(time, mouseState, keyboardState);
+
+            if (keyboardState.IsKeyDown(Keys.Left)) {
+                y_angle -= 1.0f * (float)time;
+            }
+
+            if (keyboardState.IsKeyDown(Keys.Right)) {
+                y_angle += 1.0f * (float)time;
+            }
+
+            if (keyboardState.IsKeyDown(Keys.Up)) {
+                x_angle -= 1.0f * (float)time;
+            }
+
+            if (keyboardState.IsKeyDown(Keys.Down)) {
+                x_angle += 1.0f * (float)time;
+            }
 
             foreach (AnimatedMeshObject mesh in animatedMeshes)
             {

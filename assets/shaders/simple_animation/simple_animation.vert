@@ -21,7 +21,7 @@ void main(void)
     vec4 totalPosition = vec4(0.0);
     for(int i = 0 ; i < MAX_BONE_INFLUENCE ; i++)
     {
-        highp int boneId = int(aBoneIDs[i]);
+        int boneId = int(aBoneIDs[i]);
 
         if(boneId < 0)
         {
