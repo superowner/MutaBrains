@@ -26,11 +26,13 @@ namespace MutaBrains.Core.Objects
 
             AssimpContext importer = new AssimpContext();
             scene = importer.ImportFile(path,
-                PostProcessSteps.GenerateBoundingBoxes |
-                PostProcessSteps.GenerateUVCoords |
+                PostProcessSteps.CalculateTangentSpace |
+                PostProcessSteps.GenerateSmoothNormals |
                 PostProcessSteps.Triangulate |
                 PostProcessSteps.JoinIdenticalVertices |
-                PostProcessSteps.SortByPrimitiveType);
+                PostProcessSteps.GenerateBoundingBoxes |
+                PostProcessSteps.GenerateUVCoords
+            );
 
             vertexLength = 16;
 

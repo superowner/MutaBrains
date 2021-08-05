@@ -48,109 +48,23 @@ namespace MutaBrains.Core.Objects.Support
         public List<Matrix4> m_FinalBoneMatrices;
         private Animation m_CurrentAnimation;
         private double m_CurrentTime;
+        private Node rootNode;
 
         public AnimatedMeshObject(Mesh mesh, Animation animation, Node rootNode) : base(mesh)
         {
             m_Duration = animation.DurationInTicks;
             m_TicksPerSecond = animation.TicksPerSecond;
 
-            ReadHeirarchyData(ref m_RootNode, rootNode);
-            ReadMissingBones(animation);
+            this.rootNode = rootNode;
 
             m_CurrentTime = 0.0;
             m_CurrentAnimation = animation;
             m_FinalBoneMatrices = new List<Matrix4>(100);
+
             for (int i = 0; i < 100; i++)
             {
                 m_FinalBoneMatrices.Add(Matrix4.Identity);
             }
-        }
-
-        public void UpdateAnimation(double time)
-        {
-            if (m_CurrentAnimation != null)
-            {
-                m_CurrentTime += m_TicksPerSecond * time;
-                m_CurrentTime = m_CurrentTime % m_Duration;
-
-                Console.WriteLine("Animation time: " + Math.Round(m_CurrentTime, 2));
-
-                CalculateBoneTransform(ref m_RootNode, Matrix4.Identity);
-            }
-        }
-
-        private void CalculateBoneTransform(ref AssimpNodeData node, Matrix4 parentTransform)
-        {
-            string nodeName = node.name;
-            Matrix4 nodeTransform = node.transformation;
-
-            Bone Bone = FindBone(nodeName);
-
-            if (Bone != null)
-            {
-                Bone.Update(m_CurrentTime);
-                nodeTransform = Bone.m_LocalTransform;
-            }
-
-            Matrix4 globalTransformation = parentTransform * nodeTransform;
-
-            if (m_BoneInfoMap.ContainsKey(nodeName))
-            {
-                int index = m_BoneInfoMap[nodeName].id;
-                Matrix4 offset = m_BoneInfoMap[nodeName].offset;
-                m_FinalBoneMatrices[index] = (offset == Matrix4.Zero) ? globalTransformation : globalTransformation * offset;
-            }
-
-            for (int i = 0; i < node.childrenCount; i++)
-            {
-                AssimpNodeData tempNodeChildren = node.children[i];
-                CalculateBoneTransform(ref tempNodeChildren, globalTransformation);
-                node.children[i] = tempNodeChildren;
-            }
-        }
-
-        private void ReadHeirarchyData(ref AssimpNodeData dest, Node src)
-        {
-            dest.name = src.Name;
-            dest.transformation = GLConverter.FromMatrix(src.Transform);
-            dest.childrenCount = src.ChildCount;
-
-            if (dest.children == null)
-            {
-                dest.children = new List<AssimpNodeData>();
-            }
-
-            foreach (Node children in src.Children)
-            {
-                AssimpNodeData newData = new AssimpNodeData();
-                ReadHeirarchyData(ref newData, children);
-                dest.children.Add(newData);
-            }
-        }
-
-        private void ReadMissingBones(Animation animation)
-        {
-            m_Bones = new List<Bone>();
-
-            foreach (NodeAnimationChannel channel in animation.NodeAnimationChannels)
-            {
-                string boneName = channel.NodeName;
-
-                if (!m_BoneInfoMap.ContainsKey(boneName))
-                {
-                    BoneInfo boneInfo = new BoneInfo();
-                    boneInfo.id = m_BoneCounter;
-                    m_BoneInfoMap[boneName] = boneInfo;
-                    m_BoneCounter++;
-                }
-
-                m_Bones.Add(new Bone(channel.NodeName, m_BoneInfoMap[channel.NodeName].id, channel));
-            }
-        }
-
-        private Bone FindBone(string name)
-        {
-            return m_Bones.Find(b => b.m_Name == name);
         }
 
         public override void ParseMesh(Material material, string path, int offset)
@@ -177,7 +91,7 @@ namespace MutaBrains.Core.Objects.Support
                 SetVertexBoneDataToDefault(ref vertex);
                 vertex.Position = GLConverter.FromVector3(mesh.Vertices[i]);
                 vertex.Normal = GLConverter.FromVector3(mesh.Normals[i]);
-                vertex.TexCoords = (mesh.HasTextureCoords(diff_texture_index)) ? GLConverter.FromVector3(textures[i]).Xy : Vector2.Zero;
+                vertex.TexCoords = mesh.HasTextureCoords(diff_texture_index) ? GLConverter.FromVector3(textures[i]).Xy : Vector2.Zero;
 
                 m_vertices.Add(vertex);
             }
@@ -212,6 +126,96 @@ namespace MutaBrains.Core.Objects.Support
 
             vertices = meshVertexList.ToArray();
             indices = indicesList.ToArray();
+
+            ReadHeirarchyData(ref m_RootNode, rootNode);
+            SetupBones(m_CurrentAnimation);
+        }
+
+        public void UpdateAnimation(double time)
+        {
+            if (m_CurrentAnimation != null)
+            {
+                m_CurrentTime += m_TicksPerSecond * time;
+                m_CurrentTime = m_CurrentTime % m_Duration;
+
+                Console.WriteLine("Animation time: " + Math.Round(m_CurrentTime, 2));
+
+                CalculateBoneTransform(ref m_RootNode, Matrix4.Identity);
+            }
+        }
+
+        private void CalculateBoneTransform(ref AssimpNodeData node, Matrix4 parentTransform)
+        {
+            string nodeName = node.name;
+            Matrix4 nodeTransform = node.transformation;
+
+            Bone Bone = FindBone(nodeName);
+
+            if (Bone != null)
+            {
+                Bone.Update(m_CurrentTime);
+                nodeTransform = Bone.m_LocalTransform;
+            }
+
+            Matrix4 globalTransformation = parentTransform * nodeTransform;
+
+            if (m_BoneInfoMap.ContainsKey(nodeName))
+            {
+                int index = m_BoneInfoMap[nodeName].id;
+                Matrix4 offset = m_BoneInfoMap[nodeName].offset;
+                m_FinalBoneMatrices[index] = globalTransformation * offset;
+            }
+
+            for (int i = 0; i < node.childrenCount; i++)
+            {
+                AssimpNodeData tempNodeChildren = node.children[i];
+                CalculateBoneTransform(ref tempNodeChildren, globalTransformation);
+                node.children[i] = tempNodeChildren;
+            }
+        }
+
+        private void ReadHeirarchyData(ref AssimpNodeData dest, Node src)
+        {
+            dest.name = src.Name;
+            dest.transformation = GLConverter.FromMatrix(src.Transform);
+            dest.childrenCount = src.ChildCount;
+
+            if (dest.children == null)
+            {
+                dest.children = new List<AssimpNodeData>();
+            }
+
+            foreach (Node children in src.Children)
+            {
+                AssimpNodeData newData = new AssimpNodeData();
+                ReadHeirarchyData(ref newData, children);
+                dest.children.Add(newData);
+            }
+        }
+
+        private void SetupBones(Animation animation)
+        {
+            m_Bones = new List<Bone>();
+
+            foreach (NodeAnimationChannel channel in animation.NodeAnimationChannels)
+            {
+                string boneName = channel.NodeName;
+
+                if (!m_BoneInfoMap.ContainsKey(boneName))
+                {
+                    BoneInfo boneInfo = new BoneInfo();
+                    boneInfo.id = m_BoneCounter;
+                    m_BoneInfoMap[boneName] = boneInfo;
+                    m_BoneCounter++;
+                }
+
+                m_Bones.Add(new Bone(channel.NodeName, m_BoneInfoMap[channel.NodeName].id, channel));
+            }
+        }
+
+        private Bone FindBone(string name)
+        {
+            return m_Bones.Find(b => b.m_Name == name);
         }
 
         private void SetVertexBoneDataToDefault(ref Vertex vertex)
@@ -227,7 +231,7 @@ namespace MutaBrains.Core.Objects.Support
         {
             foreach (Assimp.Bone bone in mesh.Bones)
             {
-                int boneID = -1;
+                int boneID;
                 string boneName = bone.Name;
 
                 if (!m_BoneInfoMap.ContainsKey(boneName))
