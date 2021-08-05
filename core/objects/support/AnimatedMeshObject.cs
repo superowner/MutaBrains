@@ -106,9 +106,6 @@ namespace MutaBrains.Core.Objects.Support
                 }
             }
 
-            vertices = meshVertexList.ToArray();
-            indices = indicesList.ToArray();
-
             ExtractBoneWeightForVertices(m_vertices);
 
             foreach (Vertex v in m_vertices)
@@ -138,7 +135,7 @@ namespace MutaBrains.Core.Objects.Support
                 m_CurrentTime += m_TicksPerSecond * time;
                 m_CurrentTime = m_CurrentTime % m_Duration;
 
-                Console.WriteLine("Animation time: " + Math.Round(m_CurrentTime, 2));
+                Console.WriteLine("Animation time: " + m_CurrentTime);
 
                 CalculateBoneTransform(ref m_RootNode, Matrix4.Identity);
             }

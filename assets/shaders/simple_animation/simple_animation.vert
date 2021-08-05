@@ -18,25 +18,12 @@ out vec2 Texture;
 
 void main(void)
 {
-    vec4 totalPosition = vec4(0.0);
-    for(int i = 0 ; i < MAX_BONE_INFLUENCE ; i++)
-    {
-        int boneId = int(aBoneIDs[i]);
+    mat4 Bone = finalBonesMatrices[int(aBoneIDs[0])] * aBoneWeights[0];
+    Bone += finalBonesMatrices[int(aBoneIDs[1])] * aBoneWeights[1];
+    Bone += finalBonesMatrices[int(aBoneIDs[2])] * aBoneWeights[2];
+    Bone += finalBonesMatrices[int(aBoneIDs[3])] * aBoneWeights[3];
 
-        if(boneId < 0)
-        {
-            continue;
-        }
-        if(boneId >= MAX_BONES) 
-        {
-            totalPosition = vec4(aPosition,1.0);
-            break;
-        }
-        vec4 localPosition = finalBonesMatrices[boneId] * vec4(aPosition, 1.0);
-        totalPosition += localPosition * aBoneWeights[i];
-   }
+    vec4 v = Bone * vec4(aPosition, 1);
 
-   gl_Position = totalPosition * model * view * projection;
-   //gl_Position =  projection * (view * model) * totalPosition;
-   //gl_Position = vec4(aPosition, 1.0) * model * view * projection;
+    gl_Position = vec4(v.xyz, 1) * model * view * projection;
 }
