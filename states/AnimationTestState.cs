@@ -25,7 +25,7 @@ namespace MutaBrains.States
             background = new Background(Path.Combine(Navigator.TexturesDir, "gui", "gui_background.png"), window.ClientSize);
             pointer = new Pointer(window.MousePosition);
 
-            rumba = new AnimatedObject3D("animated", Path.Combine(Navigator.MeshesDir, "test", "parent-child-child-letter-f.dae"), new Vector3(0, 0, 0), new Vector3(1.0f));
+            rumba = new AnimatedObject3D("animated", Path.Combine(Navigator.MeshesDir, "test", "letter-f-animated.dae"), new Vector3(0, 0, 0), new Vector3(1.0f));
 
             CameraManager.Perspective.Position = new Vector3(0, 0, 8);
 
