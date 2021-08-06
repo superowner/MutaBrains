@@ -175,15 +175,25 @@ namespace MutaBrains.Core.Objects
                     {
                         mesh.diffuseTexture.Use(TextureUnit.Texture0);
                     }
-                    //if (mesh.specularTexture != null)
-                    //{
-                    //    mesh.specularTexture.Use(TextureUnit.Texture1);
-                    //}
+                    if (mesh.specularTexture != null)
+                    {
+                        mesh.specularTexture.Use(TextureUnit.Texture1);
+                    }
 
                     ShaderManager.simpleAnimationShader.Use();
                     ShaderManager.simpleAnimationShader.SetMatrix4("model", modelMatrix);
                     ShaderManager.simpleAnimationShader.SetMatrix4("view", CameraManager.Perspective.GetViewMatrix());
                     ShaderManager.simpleAnimationShader.SetMatrix4("projection", CameraManager.Perspective.GetProjectionMatrix());
+
+                    // Material
+                    ShaderManager.simpleAnimationShader.SetInt("material.diffuse", 0);
+                    ShaderManager.simpleAnimationShader.SetInt("material.specular", 1);
+                    ShaderManager.simpleAnimationShader.SetFloat("material.shininess", 2.0f);
+                    // Directional light
+                    ShaderManager.simpleAnimationShader.SetVector3("dirLight.direction", new Vector3(-.1f));
+                    ShaderManager.simpleAnimationShader.SetVector3("dirLight.ambient", new Vector3(0.1f));
+                    ShaderManager.simpleAnimationShader.SetVector3("dirLight.diffuse", new Vector3(1.0f));
+                    ShaderManager.simpleAnimationShader.SetVector3("dirLight.specular", new Vector3(1.0f));
 
                     List<Matrix4> transforms = mesh.m_FinalBoneMatrices;
                     for (int i = 0; i < transforms.Count; ++i)
