@@ -93,7 +93,7 @@ namespace MutaBrains.Core.Objects.Support
                 vertex.Normal = GLConverter.FromVector3(mesh.Normals[i]);
                 vertex.TexCoords = mesh.HasTextureCoords(diff_texture_index) ? GLConverter.FromVector3(textures[i]).Xy : Vector2.Zero;
 
-                m_vertices.Add(vertex);
+                m_vertices.Add(vertex); 
             }
 
             List<uint> indicesList = new List<uint>();

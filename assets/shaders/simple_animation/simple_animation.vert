@@ -22,9 +22,10 @@ void main(void)
     Bone += finalBonesMatrices[int(aBoneIDs[2])] * aBoneWeights[2];
     Bone += finalBonesMatrices[int(aBoneIDs[3])] * aBoneWeights[3];
     vec4 position = Bone * vec4(aPosition, 1);
+    vec3 normal = mat3(Bone) * aNormal;
 
     Position = vec3(vec4(position.xyz, 1) * model);
-    Normal = aNormal * mat3(transpose(inverse(model)));
+    Normal = normal * mat3(model);
     Texture = aTexture;
     
     gl_Position = vec4(position.xyz, 1) * model * view * projection;
