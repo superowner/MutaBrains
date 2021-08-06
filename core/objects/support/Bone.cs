@@ -175,7 +175,7 @@ namespace MutaBrains.Core.Objects.Support
             Matrix4 rotation = InterpolateRotation(animationTime);
             Matrix4 scale = InterpolateScaling(animationTime);
 
-            m_LocalTransform = translation * rotation * scale;
+            m_LocalTransform = scale * rotation * translation;
         }
     }
 }

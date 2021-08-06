@@ -34,7 +34,8 @@ namespace MutaBrains.Core.Objects
                 PostProcessSteps.Triangulate |
                 PostProcessSteps.JoinIdenticalVertices |
                 PostProcessSteps.GenerateBoundingBoxes |
-                PostProcessSteps.GenerateUVCoords
+                PostProcessSteps.GenerateUVCoords |
+                PostProcessSteps.SortByPrimitiveType
             );
 
             vertexLength = 16;
@@ -130,7 +131,7 @@ namespace MutaBrains.Core.Objects
             scaleMatrix = Matrix4.CreateScale(scale);
             translationMatrix = Matrix4.CreateTranslation(position);
 
-            modelMatrix = rotationMatrix * scaleMatrix * translationMatrix;
+            modelMatrix = scaleMatrix * rotationMatrix * translationMatrix;
         }
 
         public override void Update(double time, MouseState mouseState = null, KeyboardState keyboardState = null)

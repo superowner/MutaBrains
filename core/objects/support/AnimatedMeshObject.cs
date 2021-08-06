@@ -154,13 +154,13 @@ namespace MutaBrains.Core.Objects.Support
                 nodeTransform = Bone.m_LocalTransform;
             }
 
-            Matrix4 globalTransformation = parentTransform * nodeTransform;
+            Matrix4 globalTransformation = nodeTransform * parentTransform;
 
             if (m_BoneInfoMap.ContainsKey(nodeName))
             {
                 int index = m_BoneInfoMap[nodeName].id;
                 Matrix4 offset = m_BoneInfoMap[nodeName].offset;
-                m_FinalBoneMatrices[index] = globalTransformation * offset;
+                m_FinalBoneMatrices[index] = offset * globalTransformation;
             }
 
             for (int i = 0; i < node.childrenCount; i++)
@@ -174,7 +174,7 @@ namespace MutaBrains.Core.Objects.Support
         private void ReadHeirarchyData(ref AssimpNodeData dest, Node src)
         {
             dest.name = src.Name;
-            dest.transformation = GLConverter.FromMatrix(src.Transform);
+            dest.transformation = Matrix4.Transpose(GLConverter.FromMatrix(src.Transform));
             dest.childrenCount = src.ChildCount;
 
             if (dest.children == null)
@@ -235,7 +235,7 @@ namespace MutaBrains.Core.Objects.Support
                 {
                     BoneInfo newBoneInfo;
                     newBoneInfo.id = m_BoneCounter;
-                    newBoneInfo.offset = GLConverter.FromMatrix(bone.OffsetMatrix);
+                    newBoneInfo.offset = Matrix4.Transpose(GLConverter.FromMatrix(bone.OffsetMatrix));
                     m_BoneInfoMap[boneName] = newBoneInfo;
                     boneID = m_BoneCounter;
                     m_BoneCounter++;
