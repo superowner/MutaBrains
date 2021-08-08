@@ -184,7 +184,7 @@ namespace MutaBrains.Core.Objects
                     // Material
                     ShaderManager.simpleMeshShader.SetInt("material.diffuse", 0);
                     ShaderManager.simpleMeshShader.SetInt("material.specular", 1);
-                    ShaderManager.simpleMeshShader.SetFloat("material.shininess", 2.0f);
+                    ShaderManager.simpleMeshShader.SetFloat("material.shininess", 1.0f);
                     // Directional light
                     ShaderManager.simpleMeshShader.SetVector3("dirLight.direction", new Vector3(-.1f));
                     ShaderManager.simpleMeshShader.SetVector3("dirLight.ambient", new Vector3(0.1f));

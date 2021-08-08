@@ -14,7 +14,8 @@ namespace MutaBrains.States
     {
         Background background;
         Pointer pointer;
-        AnimatedObject3D rumba;
+        AnimatedObject3D model_rumba;
+        AnimatedObject3D model_idle;
 
         public AnimationTestState(string name, MBWindow window) : base(name, window) { }
 
@@ -25,9 +26,10 @@ namespace MutaBrains.States
             background = new Background(Path.Combine(Navigator.TexturesDir, "gui", "gui_background.png"), window.ClientSize);
             pointer = new Pointer(window.MousePosition);
 
-            rumba = new AnimatedObject3D("animated", Path.Combine(Navigator.MeshesDir, "vampire", "vampire.dae"), new Vector3(0, 0, 0), new Vector3(1));
+            model_rumba = new AnimatedObject3D("animated", Path.Combine(Navigator.MeshesDir, "rumba", "rumba.dae"), new Vector3(1.5f, 0, 0), new Vector3(0.02f));
+            model_idle = new AnimatedObject3D("animated", Path.Combine(Navigator.MeshesDir, "animated", "animated.dae"), new Vector3(-1.5f, 0, 0), new Vector3(0.02f));
 
-            CameraManager.Perspective.Position = new Vector3(0, 1, 8);
+            CameraManager.Perspective.Position = new Vector3(0, 2, 6);
 
             window.MouseWheel += Window_MouseWheel;
 
@@ -58,7 +60,8 @@ namespace MutaBrains.States
                 window.SelectState("main_menu");
             }
 
-            rumba.Update(args.Time, window.MouseState, window.KeyboardState);
+            model_rumba.Update(args.Time, window.MouseState, window.KeyboardState);
+            model_idle.Update(args.Time, window.MouseState, window.KeyboardState);
 
             pointer.Update(args.Time, window.MousePosition);
         }
@@ -69,7 +72,8 @@ namespace MutaBrains.States
 
             background.Draw(args.Time);
 
-            rumba.Draw(args.Time);
+            model_rumba.Draw(args.Time);
+            model_idle.Draw(args.Time);
 
             pointer.Draw(args.Time);
         }

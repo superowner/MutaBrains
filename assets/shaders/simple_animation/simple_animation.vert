@@ -17,16 +17,27 @@ out vec2 Texture;
 
 void main(void)
 {
-    mat4 Bone = finalBonesMatrices[int(aBoneIDs[0])] * aBoneWeights[0];
-    Bone += finalBonesMatrices[int(aBoneIDs[1])] * aBoneWeights[1];
-    Bone += finalBonesMatrices[int(aBoneIDs[2])] * aBoneWeights[2];
-    Bone += finalBonesMatrices[int(aBoneIDs[3])] * aBoneWeights[3];
-    vec4 position = Bone * vec4(aPosition, 1);
-    vec3 normal = mat3(Bone) * aNormal;
+    vec4 totalPosition = vec4(0.0f);
+    vec3 totalNormal = vec3(0);
 
-    Position = vec3(vec4(position.xyz, 1) * model);
-    Normal = normal * mat3(model);
+    for(int i = 0 ; i < 4 ; i++)
+    {
+        if(aBoneIDs[i] == -1) 
+            continue;
+        if(aBoneIDs[i] >= 100) 
+        {
+            totalPosition = vec4(aPosition,1.0f);
+            break;
+        }
+        vec4 localPosition = finalBonesMatrices[int(aBoneIDs[i])] * vec4(aPosition,1.0f);
+        totalPosition += localPosition * aBoneWeights[i];
+        vec3 localNormal = mat3(finalBonesMatrices[int(aBoneIDs[i])]) * aNormal;
+        totalNormal += localNormal * aBoneWeights[i];
+   }
+
+    Position = vec3(totalPosition * model);
+    Normal = totalNormal * mat3(model);
     Texture = aTexture;
     
-    gl_Position = vec4(position.xyz, 1) * model * view * projection;
+    gl_Position = totalPosition * model * view * projection;
 }

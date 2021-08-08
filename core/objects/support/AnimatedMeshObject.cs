@@ -69,6 +69,8 @@ namespace MutaBrains.Core.Objects.Support
 
         public override void ParseMesh(Material material, string path, int offset)
         {
+            ReadHeirarchyData(ref m_RootNode, rootNode);
+
             int diff_texture_index = material.TextureDiffuse.TextureIndex;
             List<Vector3D> textures = mesh.TextureCoordinateChannels[diff_texture_index];
 
@@ -124,8 +126,42 @@ namespace MutaBrains.Core.Objects.Support
             vertices = meshVertexList.ToArray();
             indices = indicesList.ToArray();
 
-            ReadHeirarchyData(ref m_RootNode, rootNode);
             SetupBones(m_CurrentAnimation);
+        }
+
+        private void ExtractBoneWeightForVertices(List<Vertex> vertices)
+        {
+            foreach (Assimp.Bone bone in mesh.Bones)
+            {
+                int boneID;
+                string boneName = bone.Name;
+
+                if (!m_BoneInfoMap.ContainsKey(boneName))
+                {
+                    BoneInfo newBoneInfo;
+                    newBoneInfo.id = m_BoneCounter;
+                    newBoneInfo.offset = Matrix4.Transpose(GLConverter.FromMatrix(bone.OffsetMatrix));
+                    m_BoneInfoMap[boneName] = newBoneInfo;
+                    boneID = m_BoneCounter;
+                    m_BoneCounter++;
+                }
+                else
+                {
+                    boneID = m_BoneInfoMap[boneName].id;
+                }
+
+                int numWeights = bone.VertexWeightCount;
+
+                for (int weightIndex = 0; weightIndex < numWeights; ++weightIndex)
+                {
+                    int vertexId = bone.VertexWeights[weightIndex].VertexID;
+                    float weight = bone.VertexWeights[weightIndex].Weight;
+
+                    Vertex temVertex = vertices[vertexId];
+                    SetVertexBoneData(ref temVertex, boneID, weight);
+                    vertices[vertexId] = temVertex;
+                }
+            }
         }
 
         public void UpdateAnimation(double time)
@@ -135,9 +171,7 @@ namespace MutaBrains.Core.Objects.Support
                 m_CurrentTime += m_TicksPerSecond * time;
                 m_CurrentTime = m_CurrentTime % m_Duration;
 
-                Console.WriteLine("Animation time: " + m_CurrentTime);
-
-                CalculateBoneTransform(ref m_RootNode, Matrix4.Identity);
+                CalculateBoneTransform(ref m_RootNode, m_RootNode.transformation.Inverted());
             }
         }
 
@@ -222,41 +256,6 @@ namespace MutaBrains.Core.Objects.Support
             vertex.TexCoords = Vector2.Zero;
             vertex.m_BoneIDs = new float[4] { -1, -1, -1, -1 };
             vertex.m_Weights = new float[4] { 0, 0, 0, 0 };
-        }
-
-        private void ExtractBoneWeightForVertices(List<Vertex> vertices)
-        {
-            foreach (Assimp.Bone bone in mesh.Bones)
-            {
-                int boneID;
-                string boneName = bone.Name;
-
-                if (!m_BoneInfoMap.ContainsKey(boneName))
-                {
-                    BoneInfo newBoneInfo;
-                    newBoneInfo.id = m_BoneCounter;
-                    newBoneInfo.offset = Matrix4.Transpose(GLConverter.FromMatrix(bone.OffsetMatrix));
-                    m_BoneInfoMap[boneName] = newBoneInfo;
-                    boneID = m_BoneCounter;
-                    m_BoneCounter++;
-                }
-                else
-                {
-                    boneID = m_BoneInfoMap[boneName].id;
-                }
-
-                int numWeights = bone.VertexWeightCount;
-
-                for (int weightIndex = 0; weightIndex < numWeights; ++weightIndex)
-                {
-                    int vertexId = bone.VertexWeights[weightIndex].VertexID;
-                    float weight = bone.VertexWeights[weightIndex].Weight;
-
-                    Vertex temVertex = vertices[vertexId];
-                    SetVertexBoneData(ref temVertex, boneID, weight);
-                    vertices[vertexId] = temVertex;
-                }
-            }
         }
 
         private void SetVertexBoneData(ref Vertex vertex, int boneID, float weight)

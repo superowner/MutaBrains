@@ -184,7 +184,6 @@ namespace MutaBrains.Core.Objects
                     ShaderManager.simpleAnimationShader.SetMatrix4("model", modelMatrix);
                     ShaderManager.simpleAnimationShader.SetMatrix4("view", CameraManager.Perspective.GetViewMatrix());
                     ShaderManager.simpleAnimationShader.SetMatrix4("projection", CameraManager.Perspective.GetProjectionMatrix());
-
                     // Material
                     ShaderManager.simpleAnimationShader.SetInt("material.diffuse", 0);
                     ShaderManager.simpleAnimationShader.SetInt("material.specular", 1);
