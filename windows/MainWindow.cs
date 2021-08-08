@@ -10,7 +10,7 @@ namespace MutaBrains.Windows
             AddState(new MainMenuState("main_menu", this));
             AddState(new PhysicsTestState("physics_test", this));
             AddState(new AnimationTestState("animation_test", this));
-            SelectState("animation_test");
+            SelectState("main_menu");
         }
     }
 }
