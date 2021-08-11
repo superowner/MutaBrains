@@ -29,8 +29,6 @@ namespace MutaBrains.Core.Objects
 
             AssimpContext importer = new AssimpContext();
             scene = importer.ImportFile(path,
-                PostProcessSteps.CalculateTangentSpace |
-                PostProcessSteps.GenerateSmoothNormals |
                 PostProcessSteps.Triangulate |
                 PostProcessSteps.JoinIdenticalVertices |
                 PostProcessSteps.GenerateBoundingBoxes |
