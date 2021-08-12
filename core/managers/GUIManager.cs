@@ -18,12 +18,15 @@ namespace MutaBrains.Core.Managers
             components = new List<Component>();
 
             Form testForm = new Form("DRAG'n'DROP ME!", "Just try!", window.ClientSize.ToVector2()/2, ComponentOrigin.Center);
-            Button physicsBtn = new Button("Physics test", new Vector2(testForm.size.X / 2, testForm.size.Y - 200), ComponentOrigin.Center);
-            Button animationBtn = new Button("Animation test", new Vector2(testForm.size.X / 2, testForm.size.Y - 150), ComponentOrigin.Center);
+            Button physicsBtn = new Button("Physics test", new Vector2(testForm.size.X / 2, testForm.size.Y - 250), ComponentOrigin.Center);
+            Button animationBtn = new Button("Animation test", new Vector2(testForm.size.X / 2, testForm.size.Y - 200), ComponentOrigin.Center);
+            Button terrainBtn = new Button("Terrain test", new Vector2(testForm.size.X / 2, testForm.size.Y - 150), ComponentOrigin.Center);
             physicsBtn.OnMouseClick += (o, a) => { window.SelectState("physics_test"); };
             animationBtn.OnMouseClick += (o, a) => { window.SelectState("animation_test"); };
+            terrainBtn.OnMouseClick += (o, a) => { window.SelectState("terrain_test"); };
             testForm.addChild(physicsBtn);
             testForm.addChild(animationBtn);
+            testForm.addChild(terrainBtn);
             components.Add(testForm);
         }
 
