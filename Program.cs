@@ -17,6 +17,8 @@ namespace MutaBrains
                 NumberOfSamples = 4,
                 Title = "MutaBrains",
                 WindowBorder = OpenTK.Windowing.Common.WindowBorder.Resizable,
+                API = OpenTK.Windowing.Common.ContextAPI.OpenGL,
+                APIVersion = new System.Version(4, 3),
                 IsEventDriven = false,
             };
 

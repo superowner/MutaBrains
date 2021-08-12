@@ -162,6 +162,8 @@ namespace MutaBrains.Core.Objects
         {
             if (visible)
             {
+                GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Line);
+
                 GL.Enable(EnableCap.DepthTest);
                 GL.FrontFace(FrontFaceDirection.Ccw);
 
@@ -202,6 +204,8 @@ namespace MutaBrains.Core.Objects
                 }
 
                 GL.FrontFace(FrontFaceDirection.Cw);
+
+                GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill);
             }
         }
     }
