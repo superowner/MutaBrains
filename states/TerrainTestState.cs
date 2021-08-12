@@ -15,6 +15,8 @@ namespace MutaBrains.States
         Background background;
         Pointer pointer;
 
+        Terrain3D terrain;
+
         public TerrainTestState(string name, MBWindow window) : base(name, window) { }
 
         public override void OnLoad()
@@ -23,6 +25,8 @@ namespace MutaBrains.States
 
             background = new Background(Path.Combine(Navigator.TexturesDir, "gui", "gui_background.png"), window.ClientSize);
             pointer = new Pointer(window.MousePosition);
+
+            terrain = new Terrain3D();
 
             CameraManager.Perspective.Position = new Vector3(0, 2, 6);
 
