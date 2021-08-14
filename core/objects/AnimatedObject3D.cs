@@ -52,23 +52,23 @@ namespace MutaBrains.Core.Objects
             GL.BindBuffer(BufferTarget.ElementArrayBuffer, indexBuffer);
             GL.BufferData(BufferTarget.ElementArrayBuffer, sizeof(uint) * indices.Length, indices, BufferUsageHint.StaticDraw);
 
-            int positionLocation = ShaderManager.simpleAnimationShader.GetAttribLocation("aPosition");
+            int positionLocation = ShaderManager.animationShader.GetAttribLocation("aPosition");
             GL.VertexAttribPointer(positionLocation, 3, VertexAttribPointerType.Float, false, vertexLength * sizeof(float), 0);
             GL.EnableVertexAttribArray(positionLocation);
 
-            int normalLocation = ShaderManager.simpleAnimationShader.GetAttribLocation("aNormal");
+            int normalLocation = ShaderManager.animationShader.GetAttribLocation("aNormal");
             GL.VertexAttribPointer(normalLocation, 3, VertexAttribPointerType.Float, false, vertexLength * sizeof(float), 3 * sizeof(float));
             GL.EnableVertexAttribArray(normalLocation);
 
-            int texCoordLocation = ShaderManager.simpleAnimationShader.GetAttribLocation("aTexture");
+            int texCoordLocation = ShaderManager.animationShader.GetAttribLocation("aTexture");
             GL.VertexAttribPointer(texCoordLocation, 2, VertexAttribPointerType.Float, false, vertexLength * sizeof(float), 6 * sizeof(float));
             GL.EnableVertexAttribArray(texCoordLocation);
 
-            int boneIdsLocation = ShaderManager.simpleAnimationShader.GetAttribLocation("aBoneIDs");
+            int boneIdsLocation = ShaderManager.animationShader.GetAttribLocation("aBoneIDs");
             GL.VertexAttribPointer(boneIdsLocation, 4, VertexAttribPointerType.Float, false, vertexLength * sizeof(float), 8 * sizeof(float));
             GL.EnableVertexAttribArray(boneIdsLocation);
 
-            int boneWeightsLocation = ShaderManager.simpleAnimationShader.GetAttribLocation("aBoneWeights");
+            int boneWeightsLocation = ShaderManager.animationShader.GetAttribLocation("aBoneWeights");
             GL.VertexAttribPointer(boneWeightsLocation, 4, VertexAttribPointerType.Float, false, vertexLength * sizeof(float), 12 * sizeof(float));
             GL.EnableVertexAttribArray(boneWeightsLocation);
 
@@ -180,24 +180,24 @@ namespace MutaBrains.Core.Objects
                         mesh.specularTexture.Use(TextureUnit.Texture1);
                     }
 
-                    ShaderManager.simpleAnimationShader.Use();
-                    ShaderManager.simpleAnimationShader.SetMatrix4("model", modelMatrix);
-                    ShaderManager.simpleAnimationShader.SetMatrix4("view", CameraManager.Perspective.GetViewMatrix());
-                    ShaderManager.simpleAnimationShader.SetMatrix4("projection", CameraManager.Perspective.GetProjectionMatrix());
+                    ShaderManager.animationShader.Use();
+                    ShaderManager.animationShader.SetMatrix4("model", modelMatrix);
+                    ShaderManager.animationShader.SetMatrix4("view", CameraManager.Perspective.GetViewMatrix());
+                    ShaderManager.animationShader.SetMatrix4("projection", CameraManager.Perspective.GetProjectionMatrix());
                     // Material
-                    ShaderManager.simpleAnimationShader.SetInt("material.diffuse", 0);
-                    ShaderManager.simpleAnimationShader.SetInt("material.specular", 1);
-                    ShaderManager.simpleAnimationShader.SetFloat("material.shininess", 1.0f);
+                    ShaderManager.animationShader.SetInt("material.diffuse", 0);
+                    ShaderManager.animationShader.SetInt("material.specular", 1);
+                    ShaderManager.animationShader.SetFloat("material.shininess", 1.0f);
                     // Directional light
-                    ShaderManager.simpleAnimationShader.SetVector3("dirLight.direction", new Vector3(-.1f));
-                    ShaderManager.simpleAnimationShader.SetVector3("dirLight.ambient", new Vector3(0.1f));
-                    ShaderManager.simpleAnimationShader.SetVector3("dirLight.diffuse", new Vector3(1.0f));
-                    ShaderManager.simpleAnimationShader.SetVector3("dirLight.specular", new Vector3(1.0f));
+                    ShaderManager.animationShader.SetVector3("dirLight.direction", new Vector3(-.1f));
+                    ShaderManager.animationShader.SetVector3("dirLight.ambient", new Vector3(0.1f));
+                    ShaderManager.animationShader.SetVector3("dirLight.diffuse", new Vector3(1.0f));
+                    ShaderManager.animationShader.SetVector3("dirLight.specular", new Vector3(1.0f));
 
                     List<Matrix4> transforms = mesh.m_FinalBoneMatrices;
                     for (int i = 0; i < transforms.Count; ++i)
                     {
-                        ShaderManager.simpleAnimationShader.SetMatrix4Raw("finalBonesMatrices[" + i + "]", transforms[i]);
+                        ShaderManager.animationShader.SetMatrix4Raw("finalBonesMatrices[" + i + "]", transforms[i]);
                     }
 
                     GL.DrawElements(OpenTK.Graphics.OpenGL4.PrimitiveType.Triangles, indices.Length, DrawElementsType.UnsignedInt, 0);

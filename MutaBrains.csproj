@@ -9,8 +9,10 @@
     <Content Include="assets\**\*.*">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <None Remove="assets\shaders\simple_animation\simple_animation.frag" />
-    <None Remove="assets\shaders\simple_animation\simple_animation.vert" />
+    <None Remove="assets\shaders\animation\animation.frag" />
+    <None Remove="assets\shaders\animation\animation.vert" />
+    <None Remove="assets\shaders\height_map\height_map.frag" />
+    <None Remove="assets\shaders\height_map\height_map.vert" />
     <PackageReference Include="AssimpNet" Version="5.0.0-beta1" />
     <PackageReference Include="Microsoft.ML" Version="1.6.0" />
     <PackageReference Include="Microsoft.ML.FastTree" Version="1.6.0" />

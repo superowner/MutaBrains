@@ -70,15 +70,15 @@ namespace MutaBrains.Core.Objects
             GL.BindBuffer(BufferTarget.ElementArrayBuffer, indexBuffer);
             GL.BufferData(BufferTarget.ElementArrayBuffer, sizeof(uint) * indices.Length, indices, BufferUsageHint.StaticDraw);
 
-            int positionLocation = ShaderManager.simpleMeshShader.GetAttribLocation("aPosition");
+            int positionLocation = ShaderManager.meshShader.GetAttribLocation("aPosition");
             GL.VertexAttribPointer(positionLocation, 3, VertexAttribPointerType.Float, false, vertexLength * sizeof(float), 0);
             GL.EnableVertexAttribArray(positionLocation);
 
-            int normalLocation = ShaderManager.simpleMeshShader.GetAttribLocation("aNormal");
+            int normalLocation = ShaderManager.meshShader.GetAttribLocation("aNormal");
             GL.VertexAttribPointer(normalLocation, 3, VertexAttribPointerType.Float, false, vertexLength * sizeof(float), 3 * sizeof(float));
             GL.EnableVertexAttribArray(normalLocation);
 
-            int texCoordLocation = ShaderManager.simpleMeshShader.GetAttribLocation("aTexture");
+            int texCoordLocation = ShaderManager.meshShader.GetAttribLocation("aTexture");
             GL.VertexAttribPointer(texCoordLocation, 2, VertexAttribPointerType.Float, false, vertexLength * sizeof(float), 6 * sizeof(float));
             GL.EnableVertexAttribArray(texCoordLocation);
 
@@ -176,20 +176,20 @@ namespace MutaBrains.Core.Objects
                         mesh.specularTexture.Use(TextureUnit.Texture1);
                     }
 
-                    ShaderManager.simpleMeshShader.Use();
-                    ShaderManager.simpleMeshShader.SetMatrix4("model", modelMatrix);
-                    ShaderManager.simpleMeshShader.SetMatrix4("view", CameraManager.Perspective.GetViewMatrix());
-                    ShaderManager.simpleMeshShader.SetMatrix4("projection", CameraManager.Perspective.GetProjectionMatrix());
-                    ShaderManager.simpleMeshShader.SetVector3("viewPosition", CameraManager.Perspective.Position);
+                    ShaderManager.meshShader.Use();
+                    ShaderManager.meshShader.SetMatrix4("model", modelMatrix);
+                    ShaderManager.meshShader.SetMatrix4("view", CameraManager.Perspective.GetViewMatrix());
+                    ShaderManager.meshShader.SetMatrix4("projection", CameraManager.Perspective.GetProjectionMatrix());
+                    ShaderManager.meshShader.SetVector3("viewPosition", CameraManager.Perspective.Position);
                     // Material
-                    ShaderManager.simpleMeshShader.SetInt("material.diffuse", 0);
-                    ShaderManager.simpleMeshShader.SetInt("material.specular", 1);
-                    ShaderManager.simpleMeshShader.SetFloat("material.shininess", 1.0f);
+                    ShaderManager.meshShader.SetInt("material.diffuse", 0);
+                    ShaderManager.meshShader.SetInt("material.specular", 1);
+                    ShaderManager.meshShader.SetFloat("material.shininess", 1.0f);
                     // Directional light
-                    ShaderManager.simpleMeshShader.SetVector3("dirLight.direction", new Vector3(-.1f));
-                    ShaderManager.simpleMeshShader.SetVector3("dirLight.ambient", new Vector3(0.1f));
-                    ShaderManager.simpleMeshShader.SetVector3("dirLight.diffuse", new Vector3(1.0f));
-                    ShaderManager.simpleMeshShader.SetVector3("dirLight.specular", new Vector3(1.0f));
+                    ShaderManager.meshShader.SetVector3("dirLight.direction", new Vector3(-.1f));
+                    ShaderManager.meshShader.SetVector3("dirLight.ambient", new Vector3(0.1f));
+                    ShaderManager.meshShader.SetVector3("dirLight.diffuse", new Vector3(1.0f));
+                    ShaderManager.meshShader.SetVector3("dirLight.specular", new Vector3(1.0f));
                     // Point light
                     //ShaderManager.simpleMeshShader.SetVector3("pointLight.position", lightPos);
                     // ShaderManager.simpleMeshShader.SetVector3("pointLight.position", LightManager.GetLight("point").Position);

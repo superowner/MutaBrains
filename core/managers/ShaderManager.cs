@@ -5,14 +5,16 @@ namespace MutaBrains.Core.Managers
     static class ShaderManager
     {
         public static Shader guiShader;
-        public static Shader simpleMeshShader;
-        public static Shader simpleAnimationShader;
+        public static Shader meshShader;
+        public static Shader animationShader;
+        public static Shader heightMapShader;
 
         public static void Initialize()
         {
             guiShader = new Shader("gui");
-            simpleMeshShader = new Shader("simple_mesh");
-            simpleAnimationShader = new Shader("simple_animation");
+            meshShader = new Shader("mesh");
+            animationShader = new Shader("animation");
+            heightMapShader = new Shader("height_map");
         }
     }
 }
