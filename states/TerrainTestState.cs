@@ -60,6 +60,8 @@ namespace MutaBrains.States
             }
 
             pointer.Update(args.Time, window.MousePosition);
+
+            terrain.Update();
         }
 
         public override void OnDraw(FrameEventArgs args)
@@ -67,6 +69,8 @@ namespace MutaBrains.States
             base.OnDraw(args);
 
             background.Draw(args.Time);
+
+            terrain.Draw(args.Time);
 
             pointer.Draw(args.Time);
         }
