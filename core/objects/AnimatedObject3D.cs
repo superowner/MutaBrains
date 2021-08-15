@@ -136,22 +136,6 @@ namespace MutaBrains.Core.Objects
         {
             base.Update(time, mouseState, keyboardState);
 
-            if (keyboardState.IsKeyDown(Keys.Left)) {
-                y_angle -= 1.0f * (float)time;
-            }
-
-            if (keyboardState.IsKeyDown(Keys.Right)) {
-                y_angle += 1.0f * (float)time;
-            }
-
-            if (keyboardState.IsKeyDown(Keys.Up)) {
-                x_angle -= 1.0f * (float)time;
-            }
-
-            if (keyboardState.IsKeyDown(Keys.Down)) {
-                x_angle += 1.0f * (float)time;
-            }
-
             foreach (AnimatedMeshObject mesh in animatedMeshes)
             {
                 mesh.UpdateAnimation(time);

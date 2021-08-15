@@ -30,17 +30,9 @@ namespace MutaBrains.States
 
             CameraManager.Perspective.Position = new Vector3(0, 2, 6);
 
-            window.MouseWheel += Window_MouseWheel;
-
             base.OnLoad();
         }
 
-        private void Window_MouseWheel(MouseWheelEventArgs obj)
-        {
-            Vector3 camPos = CameraManager.Perspective.Position;
-            camPos.Z -= obj.OffsetY / 4;
-            CameraManager.Perspective.Position = camPos;
-        }
         public override void OnResize(ResizeEventArgs e)
         {
             base.OnResize(e);
