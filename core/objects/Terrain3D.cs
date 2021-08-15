@@ -8,7 +8,7 @@ namespace MutaBrains.Core.Objects
 {
     class Terrain3D : Object3D
     {
-        protected Texture heightMap;
+        protected Texture heightMap, ground, grass;
 
         public Terrain3D(string name, string path, Vector3 position, Vector3 scale) : base(name, path, position, scale)
         {
@@ -16,7 +16,9 @@ namespace MutaBrains.Core.Objects
 
         protected override void Initialize(string name, string path, Vector3 position, Vector3 scale)
         {
-            heightMap = Texture.LoadTexture("assets/textures/terrains/Level1HM.png");
+            heightMap = Texture.LoadTexture("assets/textures/terrains/height16bit3.png");
+            ground = Texture.LoadTexture("assets/textures/terrains/Level1T1.jpg");
+            grass = Texture.LoadTexture("assets/textures/terrains/Level1T2.jpg");
 
             this.name = name;
             this.path = path;
@@ -68,10 +70,10 @@ namespace MutaBrains.Core.Objects
                 for (int x = 0; x < map_w; x++)
                 {
                     float y = heightMap.Pixels[x, z].R / 127.5f - 1.0f;
-                    y *= 4;
+                    y *= 50;
 
-                    float u = (float)x / map_w;
-                    float v = (float)z / map_h;
+                    float u = (float)x / 1.0f;
+                    float v = (float)z / 1.0f;
 
                     vertices.AddRange(new float[] { x, y, z, 0, 1, 0, u, v });
 
@@ -137,8 +139,9 @@ namespace MutaBrains.Core.Objects
 
                 GL.BindVertexArray(vertexArray);
 
-                heightMap.Use(TextureUnit.Texture0);
-                heightMap.Use(TextureUnit.Texture1);
+                ground.Use(TextureUnit.Texture0);
+                grass.Use(TextureUnit.Texture1);
+                ground.Use(TextureUnit.Texture3);
 
                 ShaderManager.heightMapShader.Use();
                 ShaderManager.heightMapShader.SetMatrix4("model", modelMatrix);
@@ -147,7 +150,8 @@ namespace MutaBrains.Core.Objects
                 ShaderManager.heightMapShader.SetVector3("viewPosition", CameraManager.Perspective.Position);
                 // Material
                 ShaderManager.heightMapShader.SetInt("material.diffuse", 0);
-                ShaderManager.heightMapShader.SetInt("material.specular", 1);
+                ShaderManager.heightMapShader.SetInt("material.diffuse2", 1);
+                ShaderManager.heightMapShader.SetInt("material.specular", 3);
                 ShaderManager.heightMapShader.SetFloat("material.shininess", 1.0f);
                 // Directional light
                 ShaderManager.heightMapShader.SetVector3("dirLight.direction", new Vector3(-.1f));
