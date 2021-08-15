@@ -37,9 +37,9 @@ namespace MutaBrains.Core.Objects
         {
             heightMap = Texture.LoadTexture("assets/textures/terrains/Level1HM.png");
 
-            parseHeightMap();
-
             vertexLength = 8;
+
+            parseHeightMap();
 
             vertexBuffer = GL.GenBuffer();
             GL.BindBuffer(BufferTarget.ArrayBuffer, vertexBuffer);
@@ -84,11 +84,10 @@ namespace MutaBrains.Core.Objects
                     float y = heightMap.Pixels[x, z].R / 127.5f - 1.0f;
                     y *= 4;
 
-                    //vert.position = new Vector3(x, y, z);
-                    //vert.normal = new Vector3(0, 1, 0);
-                    //vert.texture = new Vector2(x, z);
+                    float u = (float)x / map_w;
+                    float v = (float)z / map_h;
 
-                    vertices.AddRange(new float[] { x, y, z, 0, 1, 0, x, z });
+                    vertices.AddRange(new float[] { x, y, z, 0, 1, 0, u, v });
 
                     if (z < map_h -2 && x < map_w - 2)
                     {
@@ -101,6 +100,39 @@ namespace MutaBrains.Core.Objects
 
                         indices.AddRange(new uint[] { a, b, c, c, b, d });
                     }
+                }
+            }
+
+            for (int z = 0; z < map_h; z++)
+            {
+                for (int x = 0; x < map_w; x++)
+                {
+                    int p, pL, pR, pT, pB;
+                    float nx, ny, nz;
+
+                    p = z * map_w + x;
+
+                    pL = (x == 0) ? p : p - 1;
+                    pR = (p + 1 >= map_w * map_h) ? p : p + 1;
+                    pB = (p + map_w >= map_w * map_h) ? p : p + map_w;
+                    pT = (z == 0) ? p : p - map_w;
+
+                    int pL_vertex_height_index = pL * vertexLength + 1;
+                    int pR_vertex_height_index = pR * vertexLength + 1;
+                    int pB_vertex_height_index = pB * vertexLength + 1;
+                    int pT_vertex_height_index = pT * vertexLength + 1;
+
+                    nx = vertices[pL_vertex_height_index] - vertices[pR_vertex_height_index];
+                    ny = vertices[pB_vertex_height_index] - vertices[pT_vertex_height_index];
+                    nz = 2;
+
+                    Vector3 normal = new Vector3(nx, ny, nz).Normalized();
+                    int vertex_normal_x_index = p * vertexLength + 3;
+                    int vertex_normal_y_index = p * vertexLength + 4;
+                    int vertex_normal_z_index = p * vertexLength + 5;
+                    vertices[vertex_normal_x_index] = normal.X;
+                    vertices[vertex_normal_y_index] = normal.Y;
+                    vertices[vertex_normal_z_index] = normal.Z;
                 }
             }
 
@@ -126,7 +158,7 @@ namespace MutaBrains.Core.Objects
         {
             if (true)
             {
-                GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Line);
+                //GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Line);
 
                 GL.Enable(EnableCap.DepthTest);
                 GL.FrontFace(FrontFaceDirection.Cw);
@@ -155,7 +187,7 @@ namespace MutaBrains.Core.Objects
 
                 GL.FrontFace(FrontFaceDirection.Cw);
 
-                GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill);
+                //GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill);
             }
         }
     }
