@@ -26,7 +26,7 @@ namespace MutaBrains.States
             background = new Background(Path.Combine(Navigator.TexturesDir, "gui", "gui_background.png"), window.ClientSize);
             pointer = new Pointer(window.MousePosition);
 
-            terrain = new Terrain3D();
+            terrain = new Terrain3D("terrain", "", new Vector3(-50, 0, -50), Vector3.One);
 
             CameraManager.Perspective.Position = new Vector3(0, 2, 6);
 
@@ -61,7 +61,7 @@ namespace MutaBrains.States
 
             pointer.Update(args.Time, window.MousePosition);
 
-            terrain.Update();
+            terrain.Update(args.Time);
         }
 
         public override void OnDraw(FrameEventArgs args)

@@ -1,45 +1,31 @@
 using System.Collections.Generic;
 using OpenTK.Mathematics;
 using OpenTK.Graphics.OpenGL4;
-using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.PixelFormats;
-using SixLabors.ImageSharp.Processing;
 using MutaBrains.Core.Managers;
 using MutaBrains.Core.Textures;
 
 namespace MutaBrains.Core.Objects
 {
-    class Terrain3D
+    class Terrain3D : Object3D
     {
-        protected float[] vertices;
-        protected uint[] indices;
-
-        protected int indexBuffer;
-        protected int vertexBuffer;
-        protected int vertexArray;
-        protected int vertexLength;
-
-        protected Vector3 position = new Vector3(-50, 0, -50);
-        protected Vector3 scale = Vector3.One;
-        protected Matrix4 rotationMatrix;
-        protected Matrix4 scaleMatrix;
-        protected Matrix4 translationMatrix;
-        protected Matrix4 modelMatrix;
-
         protected Texture heightMap;
 
-        public Terrain3D()
+        public Terrain3D(string name, string path, Vector3 position, Vector3 scale) : base(name, path, position, scale)
         {
-            Initialize();
         }
 
-        protected virtual void Initialize()
+        protected override void Initialize(string name, string path, Vector3 position, Vector3 scale)
         {
             heightMap = Texture.LoadTexture("assets/textures/terrains/Level1HM.png");
 
+            this.name = name;
+            this.path = path;
+            this.position = position;
+            this.scale = scale;
+
             vertexLength = 8;
 
-            parseHeightMap();
+            ProcessMeshes();
 
             vertexBuffer = GL.GenBuffer();
             GL.BindBuffer(BufferTarget.ArrayBuffer, vertexBuffer);
@@ -69,7 +55,7 @@ namespace MutaBrains.Core.Objects
             GL.BindVertexArray(0);
         }
 
-        protected virtual void parseHeightMap()
+        protected override void ProcessMeshes()
         {
             int map_w = (int)heightMap.Size.X;
             int map_h = (int)heightMap.Size.Y;
@@ -89,7 +75,7 @@ namespace MutaBrains.Core.Objects
 
                     vertices.AddRange(new float[] { x, y, z, 0, 1, 0, u, v });
 
-                    if (z < map_h -2 && x < map_w - 2)
+                    if (z < map_h - 2 && x < map_w - 2)
                     {
                         uint a, b, c, d;
 
@@ -140,23 +126,9 @@ namespace MutaBrains.Core.Objects
             this.indices = indices.ToArray();
         }
 
-        protected virtual void RefreshMatrices()
+        public override void Draw(double time)
         {
-            rotationMatrix = Matrix4.CreateRotationX(0);
-            scaleMatrix = Matrix4.CreateScale(scale);
-            translationMatrix = Matrix4.CreateTranslation(position);
-
-            modelMatrix = rotationMatrix * scaleMatrix * translationMatrix;
-        }
-
-        public virtual void Update()
-        {
-            RefreshMatrices();
-        }
-
-        public virtual void Draw(double time)
-        {
-            if (true)
+            if (visible)
             {
                 //GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Line);
 
