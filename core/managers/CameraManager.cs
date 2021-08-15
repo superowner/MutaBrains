@@ -1,4 +1,5 @@
 using OpenTK.Mathematics;
+using OpenTK.Windowing.GraphicsLibraryFramework;
 using MutaBrains.Core.Output;
 
 namespace MutaBrains.Core.Managers

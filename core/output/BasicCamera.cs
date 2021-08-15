@@ -1,4 +1,5 @@
 using OpenTK.Mathematics;
+using OpenTK.Windowing.GraphicsLibraryFramework;
 
 namespace MutaBrains.Core.Output
 {
@@ -55,6 +56,11 @@ namespace MutaBrains.Core.Output
         {
             UpdateViewMatrix();
             return viewMatrix;
+        }
+
+        public virtual void Update(double time, MouseState mouseState = null, KeyboardState keyboardState = null)
+        {
+            
         }
     }
 }

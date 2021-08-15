@@ -53,6 +53,8 @@ namespace MutaBrains.States
             model_idle.Update(args.Time, window.MouseState, window.KeyboardState);
 
             pointer.Update(args.Time, window.MousePosition);
+
+            CameraManager.Perspective.Update(args.Time, window.MouseState, window.KeyboardState);
         }
 
         public override void OnDraw(FrameEventArgs args)

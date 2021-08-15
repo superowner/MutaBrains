@@ -54,6 +54,8 @@ namespace MutaBrains.States
             pointer.Update(args.Time, window.MousePosition);
 
             terrain.Update(args.Time);
+
+            CameraManager.Perspective.Update(args.Time, window.MouseState, window.KeyboardState);
         }
 
         public override void OnDraw(FrameEventArgs args)

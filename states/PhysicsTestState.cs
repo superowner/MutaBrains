@@ -91,6 +91,8 @@ namespace MutaBrains.States
             {
                 model.Update(args.Time, window.MouseState, window.KeyboardState);
             }
+
+            CameraManager.Perspective.Update(args.Time, window.MouseState, window.KeyboardState);
         }
 
         public override void OnDraw(FrameEventArgs args)
