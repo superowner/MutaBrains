@@ -21,9 +21,9 @@
     <PackageReference Include="Microsoft.ML.OnnxTransformer" Version="1.6.0" />
     <PackageReference Include="Microsoft.ML.TensorFlow" Version="1.6.0" />
     <PackageReference Include="OpenTK" Version="4.6.4" />
-    <PackageReference Include="SixLabors.Fonts" Version="1.0.0-beta0013" />
+    <PackageReference Include="SixLabors.Fonts" Version="1.0.0-beta15" />
     <PackageReference Include="SixLabors.ImageSharp" Version="1.0.3" />
-    <PackageReference Include="SixLabors.ImageSharp.Drawing" Version="1.0.0-beta11" />
+    <PackageReference Include="SixLabors.ImageSharp.Drawing" Version="1.0.0-beta13" />
     <PackageReference Include="BEPUphysics" Version="2.3.0" />
   </ItemGroup>
 

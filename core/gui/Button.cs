@@ -8,7 +8,7 @@ namespace MutaBrains.Core.GUI
     {
         public Button(string title, Vector2 startPosition, ComponentOrigin origin = ComponentOrigin.Center)
         {
-            texture = Texture.fromImage(TextDrawer.DrawOnTexture(Path.Combine(Navigator.TexturesDir, "gui", "buttons", "gui_buttons_default.png"), title, 0, 5, 18));
+            texture = Texture.fromImage(TextDrawer.DrawOnTexture(Path.Combine(Navigator.TexturesDir, "gui", "buttons", "gui_buttons_default.png"), title, 0, 1, 18));
             this.origin = origin;
             collisionCheckEnabled = true;
             Initialize(texture.Size, new Vector3(startPosition));

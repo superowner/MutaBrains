@@ -29,12 +29,11 @@ namespace MutaBrains.Core.GUI
         public static Image<Rgba32> DrawOnTexture(Image<Rgba32> image, string text, float x = 0, float y = 0, float font_size = 24, FontStyle style = FontStyle.Regular)
         {
             font = family.CreateFont(font_size, style);
-            TextGraphicsOptions options = new TextGraphicsOptions()
+            DrawingOptions options = new DrawingOptions()
             {
                 TextOptions = new TextOptions()
                 {
                     ApplyKerning = true,
-                    TabWidth = 8,
                     WrapTextWidth = image.Width,
                     HorizontalAlignment = HorizontalAlignment.Center,
                     VerticalAlignment = VerticalAlignment.Top,
