@@ -16,7 +16,7 @@ namespace MutaBrains.Core.Objects
 
         protected override void Initialize(string name, string path, Vector3 position, Vector3 scale)
         {
-            heightMap = Texture.LoadTexture("assets/textures/terrains/height16bit3.png");
+            heightMap = Texture.LoadTexture("assets/textures/terrains/Level1HM.png");
             ground = Texture.LoadTexture("assets/textures/terrains/Level1T1.jpg");
             grass = Texture.LoadTexture("assets/textures/terrains/Level1T2.jpg");
 
@@ -70,7 +70,7 @@ namespace MutaBrains.Core.Objects
                 for (int x = 0; x < map_w; x++)
                 {
                     float y = heightMap.Pixels[x, z].R / 127.5f - 1.0f;
-                    y *= 50;
+                    y *= 2;
 
                     float u = (float)x / 1.0f;
                     float v = (float)z / 1.0f;
@@ -132,8 +132,6 @@ namespace MutaBrains.Core.Objects
         {
             if (visible)
             {
-                //GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Line);
-
                 GL.Enable(EnableCap.DepthTest);
                 GL.FrontFace(FrontFaceDirection.Cw);
 
@@ -162,8 +160,6 @@ namespace MutaBrains.Core.Objects
                 GL.DrawElements(PrimitiveType.Triangles, indices.Length, DrawElementsType.UnsignedInt, 0);
 
                 GL.FrontFace(FrontFaceDirection.Cw);
-
-                //GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill);
             }
         }
     }

@@ -1,10 +1,13 @@
 using OpenTK.Mathematics;
 using OpenTK.Windowing.GraphicsLibraryFramework;
+using OpenTK.Graphics.OpenGL4;
 
 namespace MutaBrains.Core.Output
 {
     class PerspectiveCamera : BasicCamera
     {
+        private bool drawLines = false;
+
         public PerspectiveCamera(Vector2 size, Vector3 cameraPosition)
         {
             nearPlane = 0.1f;
@@ -25,6 +28,20 @@ namespace MutaBrains.Core.Output
 
         public override void Update(double time, MouseState mouseState = null, KeyboardState keyboardState = null)
         {
+            if (keyboardState.IsKeyReleased(Keys.G))
+            {
+                drawLines = !drawLines;
+                
+                if (drawLines)
+                {
+                    GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Line);
+                }
+                else
+                {
+                    GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill);
+                }
+            }
+
             Vector2 mousePos = mouseState.Position;
             Vector2 offset = mousePos - mouseState.PreviousPosition;
             float angleX = -offset.Y / 300;

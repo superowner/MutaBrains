@@ -26,7 +26,7 @@ namespace MutaBrains.States
             background = new Background(Path.Combine(Navigator.TexturesDir, "gui", "gui_background.png"), window.ClientSize);
             pointer = new Pointer(window.MousePosition);
 
-            terrain = new Terrain3D("terrain", "", new Vector3(-50, 0, -50), new Vector3(0.4f, 0.4f, 0.4f));
+            terrain = new Terrain3D("terrain", "", new Vector3(-50, 0, -50), new Vector3(1.0f));
 
             CameraManager.Perspective.Position = new Vector3(0, 2, 6);
 
