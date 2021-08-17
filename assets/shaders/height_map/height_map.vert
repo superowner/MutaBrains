@@ -9,11 +9,13 @@ uniform mat4 view;
 uniform mat4 projection;
 
 out vec3 Position;
+out vec3 OrigPosition;
 out vec3 Normal;
 out vec2 Texture;
 
 void main(void)
 {
+    OrigPosition = aPosition;
     Position = vec3(vec4(aPosition, 1.0) * model);
     Normal = aNormal * mat3(transpose(inverse(model)));
     Texture = aTexture;

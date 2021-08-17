@@ -1,10 +1,12 @@
 #version 430
 
 struct Material {
-    sampler2D diffuse;
-    sampler2D diffuse2;
+    sampler2D grass;
+    sampler2D preground;
+    sampler2D ground;
     sampler2D specular;
     float     shininess;
+    float     maxheight;
 };
 
 struct DirLight {
@@ -51,6 +53,7 @@ uniform vec3 viewPosition;
 
 in vec3 Normal;
 in vec3 Position;
+in vec3 OrigPosition;
 in vec2 Texture;
 
 out vec4 outputColor;
@@ -85,15 +88,38 @@ vec3 CalcDirLight(DirLight light, vec3 normal, vec3 viewDir)
     float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
     //combine results
 
-    vec3 color0 = texture(material.diffuse2, Texture).rgb;
-    vec3 color1 = texture(material.diffuse, Texture).rgb;
+    vec3 grassColor = texture(material.grass, Texture).rgb;
+    vec3 pregroundColor = texture(material.preground, Texture).rgb;
+    vec3 groundColor = texture(material.ground, Texture).rgb;
 
-    float height = Position.y;
-    float a = smoothstep(-1.0, 1.0, height);
-    vec3 final_texture = mix(color0, color1, a);
+    vec3 leadColor, upColor, downColor;
+    float zerotoone_height = OrigPosition.y / material.maxheight;
 
-    vec3 ambient  = light.ambient  * final_texture;
-    vec3 diffuse  = light.diffuse  * diff * final_texture;
+    if (zerotoone_height < 0.33) {
+        leadColor = groundColor;
+    } else if (zerotoone_height < 0.66) {
+        leadColor = pregroundColor;
+    } else {
+        leadColor = grassColor;
+    }
+
+    if (zerotoone_height > 0.2 && zerotoone_height < 0.4)
+    {
+        downColor = groundColor;
+        upColor = pregroundColor;
+
+        leadColor = mix(downColor, upColor, smoothstep(0.2, 0.4, zerotoone_height));
+    }
+    else if (zerotoone_height > 0.5 && zerotoone_height < 0.7)
+    {
+        downColor = pregroundColor;
+        upColor = grassColor;
+
+        leadColor = mix(downColor, upColor, smoothstep(0.5, 0.7, zerotoone_height));
+    };
+
+    vec3 ambient  = light.ambient  * leadColor;
+    vec3 diffuse  = light.diffuse  * diff * leadColor;
     vec3 specular = light.specular * spec * vec3(texture(material.specular, Texture));
     return (ambient + diffuse + specular);
 }
