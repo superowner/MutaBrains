@@ -3,6 +3,7 @@ using OpenTK.Mathematics;
 using OpenTK.Graphics.OpenGL4;
 using MutaBrains.Core.Managers;
 using MutaBrains.Core.Textures;
+using OpenTK.Windowing.GraphicsLibraryFramework;
 
 namespace MutaBrains.Core.Objects
 {
@@ -72,7 +73,6 @@ namespace MutaBrains.Core.Objects
                 for (int x = 0; x < map_w; x++)
                 {
                     float y = heightMap.Pixels[x, z].R / 255.0f;
-                    y *= 4;
 
                     if (y > maxheight)
                     {
@@ -135,6 +135,11 @@ namespace MutaBrains.Core.Objects
             this.indices = indices.ToArray();
         }
 
+        public override void Update(double time, MouseState mouseState = null, KeyboardState keyboardState = null)
+        {
+            base.Update(time, mouseState, keyboardState);
+        }
+
         public override void Draw(double time)
         {
             if (visible)
@@ -158,11 +163,11 @@ namespace MutaBrains.Core.Objects
                 ShaderManager.heightMapShader.SetInt("material.preground", 1);
                 ShaderManager.heightMapShader.SetInt("material.ground", 2);
                 ShaderManager.heightMapShader.SetFloat("material.maxheight", maxheight);
-                ShaderManager.heightMapShader.SetInt("material.specular", 2);
+                //ShaderManager.heightMapShader.SetInt("material.specular", 2);
                 ShaderManager.heightMapShader.SetFloat("material.shininess", 1.0f);
                 // Directional light
-                ShaderManager.heightMapShader.SetVector3("dirLight.direction", new Vector3(-.1f));
-                ShaderManager.heightMapShader.SetVector3("dirLight.ambient", new Vector3(0.1f));
+                ShaderManager.heightMapShader.SetVector3("dirLight.direction", new Vector3(-1.0f));
+                ShaderManager.heightMapShader.SetVector3("dirLight.ambient", new Vector3(0.001f));
                 ShaderManager.heightMapShader.SetVector3("dirLight.diffuse", new Vector3(1.0f));
                 ShaderManager.heightMapShader.SetVector3("dirLight.specular", new Vector3(1.0f));
 

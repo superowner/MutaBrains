@@ -25,7 +25,7 @@ namespace MutaBrains.States
             background = new Background(Path.Combine(Navigator.TexturesDir, "gui", "gui_background.png"), window.ClientSize);
             pointer = new Pointer(window.MousePosition);
 
-            model_idle = new AnimatedObject3D("animated", Path.Combine(Navigator.MeshesDir, "animated", "animated.dae"), new Vector3(0, 0, 0), new Vector3(0.02f));
+            model_idle = new AnimatedObject3D("animated", Path.Combine(Navigator.MeshesDir, "rumba", "rumba.dae"), new Vector3(0, 0, 0), new Vector3(0.02f));
 
             CameraManager.Perspective.Position = new Vector3(0, 2, 6);
 

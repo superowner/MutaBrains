@@ -26,7 +26,7 @@ namespace MutaBrains.States
             background = new Background(Path.Combine(Navigator.TexturesDir, "gui", "gui_background.png"), window.ClientSize);
             pointer = new Pointer(window.MousePosition);
 
-            terrain = new Terrain3D("terrain", "", new Vector3(-50, 0, -50), new Vector3(1.0f));
+            terrain = new Terrain3D("terrain", "", new Vector3(-50, 0, -50), new Vector3(1.0f, 15.0f, 1.0f));
 
             CameraManager.Perspective.Position = new Vector3(0, 2, 6);
 
@@ -53,7 +53,7 @@ namespace MutaBrains.States
 
             pointer.Update(args.Time, window.MousePosition);
 
-            terrain.Update(args.Time);
+            terrain.Update(args.Time, null, window.KeyboardState);
 
             CameraManager.Perspective.Update(args.Time, window.MouseState, window.KeyboardState);
         }
